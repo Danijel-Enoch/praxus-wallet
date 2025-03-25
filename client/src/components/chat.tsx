@@ -7,7 +7,7 @@ import {
 import { ChatInput } from "@/components/ui/chat/chat-input";
 import { ChatMessageList } from "@/components/ui/chat/chat-message-list";
 import { useTransition, animated, type AnimatedProps } from "@react-spring/web";
-import { Paperclip, Send, X } from "lucide-react";
+import { Paperclip, Send, X, Wallet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Content, UUID } from "@elizaos/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +23,7 @@ import type { IAttachment } from "@/types";
 import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
 import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
+import ShortCuts from "./short-cuts";
 
 type ExtraContentFields = {
     user: string;
@@ -287,6 +288,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     })}
                 </ChatMessageList>
             </div>
+            <ShortCuts />
             <div className="px-4 pb-4">
                 <form
                     ref={formRef}
@@ -357,15 +359,6 @@ export default function Page({ agentId }: { agentId: UUID }) {
                             agentId={agentId}
                             onChange={(newInput: string) => setInput(newInput)}
                         />
-                        <Button
-                            disabled={!input || sendMessageMutation?.isPending}
-                            type="submit"
-                            size="sm"
-                            className="ml-auto gap-1.5 h-[30px]"
-                        >
-                            {sendMessageMutation?.isPending ? "..." : "Wallet"}
-                            <Send className="size-3.5" />
-                        </Button>
 
                         <Button
                             disabled={!input || sendMessageMutation?.isPending}

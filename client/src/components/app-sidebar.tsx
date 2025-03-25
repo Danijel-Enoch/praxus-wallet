@@ -46,7 +46,7 @@ export function AppSidebar() {
 
                                 <div className="flex flex-col gap-0.5 leading-none">
                                     <span className="font-semibold">
-                                        ElizaOS
+                                        Praxus
                                     </span>
                                     <span className="">v{info?.version}</span>
                                 </div>
@@ -64,7 +64,9 @@ export function AppSidebar() {
                                 <div>
                                     {Array.from({ length: 5 }).map(
                                         (_, _index) => (
-                                            <SidebarMenuItem key={"skeleton-item"}>
+                                            <SidebarMenuItem
+                                                key={"skeleton-item"}
+                                            >
                                                 <SidebarMenuSkeleton />
                                             </SidebarMenuItem>
                                         )
@@ -111,7 +113,11 @@ export function AppSidebar() {
                         </NavLink>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <SidebarMenuButton disabled>
+                        <SidebarMenuButton
+                            onClick={() => {
+                                alert("Settings");
+                            }}
+                        >
                             <Cog /> Settings
                         </SidebarMenuButton>
                     </SidebarMenuItem>
