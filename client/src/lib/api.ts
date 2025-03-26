@@ -81,6 +81,7 @@ export const apiClient = {
         if (selectedFile) {
             formData.append("file", selectedFile);
         }
+        console.log({ formData });
         return fetcher({
             url: `/${agentId}/message`,
             method: "POST",

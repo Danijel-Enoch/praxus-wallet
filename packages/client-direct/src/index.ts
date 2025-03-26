@@ -201,11 +201,21 @@ export class DirectClient {
             async (req: express.Request, res: express.Response) => {
                 const agentId = req.params.agentId;
                 const roomId = stringToUuid(
-                    req.body.roomId ?? "default-room-" + agentId
+                    req.body.roomId ?? "default-room-" + agentId + req.body.user
                 );
                 const userId = stringToUuid(req.body.userId ?? "user");
 
                 let runtime = this.agents.get(agentId);
+
+                // rooms manager
+                // count each time rooms is used and is able to create a new room based on user
+
+                console.log("daniels log======>", {
+                    agentId,
+                    roomId,
+                    userId,
+                    x: req.body,
+                });
 
                 // if runtime is null, look for runtime with the same name
                 if (!runtime) {
