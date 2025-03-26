@@ -1,5 +1,4 @@
 import { Wallet } from "lucide-react";
-import React from "react";
 import { Button } from "./ui/button";
 
 export default function ShortCuts() {
