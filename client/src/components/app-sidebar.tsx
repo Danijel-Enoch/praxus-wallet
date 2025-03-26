@@ -57,9 +57,9 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Agents</SidebarGroupLabel>
+                    {/* <SidebarGroupLabel>Agents</SidebarGroupLabel> */}
                     <SidebarGroupContent>
-                        <SidebarMenu>
+                        {/* <SidebarMenu>
                             {query?.isPending ? (
                                 <div>
                                     {Array.from({ length: 5 }).map(
@@ -96,7 +96,7 @@ export function AppSidebar() {
                                     )}
                                 </div>
                             )}
-                        </SidebarMenu>
+                        </SidebarMenu> */}
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>

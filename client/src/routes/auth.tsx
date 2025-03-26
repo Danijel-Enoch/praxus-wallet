@@ -13,8 +13,11 @@ export default function AuthRoute() {
 
     if (!tgId || !jwt) {
         return (
-            <div>
-                <div> Unable to fetch Passkey </div>
+            <div className="flex flex-col items-center p-5">
+                <div className="mb-3 text-lg text-gray-700 font-semibold">
+                    {" "}
+                    Unable to fetch Passkey{" "}
+                </div>
                 <Button
                     onClick={() =>
                         (window.location.href = "https://t.me/praxus_bot")
