@@ -1,6 +1,4 @@
-[] Setup Telegram bot
-[] Setup Bot Auth with UI 
-[] Setup Auth Gaurd on UI 
+[] parse user id or details with message query so it can identify each users 
 [] Setup Plugin 
 [] Setup Client In Plugin 
 [] Setup  Create and Import Wallet 

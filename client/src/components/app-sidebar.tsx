@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+//import { useQuery } from "@tanstack/react-query";
 import info from "@/lib/info.json";
 import {
     Sidebar,
@@ -6,28 +6,26 @@ import {
     SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarMenuSkeleton,
 } from "@/components/ui/sidebar";
-import { apiClient } from "@/lib/api";
-import { NavLink, useLocation } from "react-router";
-import type { UUID } from "@elizaos/core";
-import { Book, Cog, User } from "lucide-react";
+//import { apiClient } from "@/lib/api";
+import { NavLink } from "react-router";
+
+import { Book, Cog } from "lucide-react";
 import ConnectionStatus from "./connection-status";
 
 export function AppSidebar() {
-    const location = useLocation();
-    const query = useQuery({
-        queryKey: ["agents"],
-        queryFn: () => apiClient.getAgents(),
-        refetchInterval: 5_000,
-    });
+    // const location = useLocation();
+    // const query = useQuery({
+    //     queryKey: ["agents"],
+    //     queryFn: () => apiClient.getAgents(),
+    //     refetchInterval: 5_000,
+    // });
 
-    const agents = query?.data?.agents;
+    //const agents = query?.data?.agents;
 
     return (
         <Sidebar>
