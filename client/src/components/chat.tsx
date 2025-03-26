@@ -288,7 +288,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     })}
                 </ChatMessageList>
             </div>
-            <ShortCuts />
+            <ShortCuts setInput={setInput} />
             <div className="px-4 pb-4">
                 <form
                     ref={formRef}
