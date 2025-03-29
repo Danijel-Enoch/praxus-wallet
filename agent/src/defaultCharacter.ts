@@ -1,5 +1,5 @@
 import { type Character, ModelProviderName } from "@elizaos/core";
-
+import twitterPlugin from "@elizaos-plugins/client-twitter";
 export const defaultCharacter: Character = {
     name: "Eliza",
     username: "eliza",
