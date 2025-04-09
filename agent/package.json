@@ -21,7 +21,7 @@
         "@elizaos/client-direct": "workspace:*",
         "@elizaos/core": "workspace:*",
         "@elizaos/plugin-bootstrap": "workspace:*",
-        "@elizaos/praxus": "workspace:*",
+        "@elizaos/plugin-praxus": "workspace:*",
         "@elizaos-plugins/client-twitter": "github:elizaos-plugins/client-twitter",
         "@types/node": "^22.13.5",
         "json5": "2.2.3",

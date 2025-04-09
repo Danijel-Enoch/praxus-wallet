@@ -1,9 +1,10 @@
 import { type Character, ModelProviderName } from "@elizaos/core";
 import twitterPlugin from "@elizaos-plugins/client-twitter";
+import praxusPlugin from "@elizaos/plugin-praxus";
 export const defaultCharacter: Character = {
     name: "Eliza",
     username: "eliza",
-    plugins: [],
+    plugins: [praxusPlugin],
     modelProvider: ModelProviderName.OPENROUTER,
     settings: {
         secrets: {},
