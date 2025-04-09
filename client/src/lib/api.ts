@@ -77,6 +77,7 @@ export const apiClient = {
         const formData = new FormData();
         formData.append("text", message);
         formData.append("user", "user");
+        formData.append("bot", "bot");
 
         if (selectedFile) {
             formData.append("file", selectedFile);

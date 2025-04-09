@@ -16,6 +16,7 @@ import { NavLink } from "react-router";
 
 import { Book, Cog } from "lucide-react";
 import ConnectionStatus from "./connection-status";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 export function AppSidebar() {
     // const location = useLocation();
@@ -50,6 +51,7 @@ export function AppSidebar() {
                                 </div>
                             </NavLink>
                         </SidebarMenuButton>
+                        <ConnectButton />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
