@@ -20,7 +20,8 @@
     ],
     "dependencies": {
         "@elizaos/core": "workspace:*",
-        "ethers": "^6.13.5"
+        "ethers": "^6.13.5",
+        "moralis": "^2.27.2"
     },
     "devDependencies": {
         "@types/node": "^22.10.5",
