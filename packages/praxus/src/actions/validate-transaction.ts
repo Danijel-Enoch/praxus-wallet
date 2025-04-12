@@ -13,6 +13,8 @@ import {
 import { getNewsSiteTemplate } from "../templates/news";
 import { createGetLatestNewsUpdatesService } from "../services/getLastestNewsUpdates";
 import { NewsUpdateExamples } from "../examples/news";
+import { getTransactionHashTemplate } from "../templates";
+import { createValidateTransactionService } from "../services/validateTransaction";
 
 export const validateTranasctionHashAction: Action = {
     name: "VALIDATE_TRANSACTION_HASH",
@@ -45,49 +47,43 @@ export const validateTranasctionHashAction: Action = {
         state = await runtime.updateRecentMessageState(state);
 
         // state -> context
-        const newSiteCtx = composeContext({
+        const transactionHashCtx = composeContext({
             state,
-            template: getNewsSiteTemplate,
+            template: getTransactionHashTemplate,
         });
 
         // context -> content
         const content = await generateMessageResponse({
             runtime,
-            context: newSiteCtx,
+            context: transactionHashCtx,
             modelClass: ModelClass.SMALL,
         });
 
         // parse content
-        const site = content?.site && !content?.error;
+        const transactionHash = content?.transactionHash && !content?.error;
 
-        if (!site) {
+        if (!transactionHash) {
             return;
         }
 
         // Instantiate API service
         // const config = await validateOpenWeatherConfig(runtime);
-        const newsService = createGetLatestNewsUpdatesService();
+        const transactionHashService = createValidateTransactionService();
 
         // Fetch weather & respond
         try {
-            const news = await newsService.getNewsUpdate(
-                String(content?.site || "")
-            );
+            const transactionStatus =
+                await transactionHashService.validateTransaction(
+                    String(content?.site || "")
+                );
             elizaLogger.success(
                 `Successfully Fetched Latest News Updates for ${content.site}`
             );
 
-            let newsContent = `Trending News Updates for ${content.site}`;
-            newsContent += `Latest News Update: \n`;
-
-            for (let i = 0; i < news.length; i++) {
-                newsContent += `${news[i].title}: ${news[i].content} \n`;
-            }
-
             if (callback) {
                 callback({
-                    text: newsContent,
-                    content: news,
+                    text: `Transaction Status: \n Block Number: ${transactionStatus.blockNumber} \n Confirmations: ${transactionStatus.confirmations} \n From: ${transactionStatus.from} \n To: ${transactionStatus.to} \n Value: ${transactionStatus.value} \n Gas Price: ${transactionStatus.gasPrice} \n Hash: ${transactionStatus.hash}`,
+                    content: transactionStatus,
                     action: "GET_NEWS_UPDATES",
                 });
 

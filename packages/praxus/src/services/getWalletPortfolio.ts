@@ -1,9 +1,10 @@
 import { ethers, Wallet } from "ethers";
 import { Alchemy, Network, GetTokensForOwnerResponse } from "alchemy-sdk";
+import { alchemyApiKey } from "../const";
 
 // Configures the Alchemy SDK
 const config = {
-    apiKey: "mQdX_ajGy6vAoSUSAnxdBH9eRbScCseK", // Replace with your API key
+    apiKey: alchemyApiKey, // Replace with your API key
     network: Network.ETH_MAINNET, // Replace with your network
 };
 
