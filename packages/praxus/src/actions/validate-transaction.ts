@@ -14,30 +14,21 @@ import { getNewsSiteTemplate } from "../templates/news";
 import { createGetLatestNewsUpdatesService } from "../services/getLastestNewsUpdates";
 import { NewsUpdateExamples } from "../examples/news";
 
-export const getNewsUpdatesAction: Action = {
-    name: "GET_NEWS_UPDATES",
+export const validateTranasctionHashAction: Action = {
+    name: "VALIDATE_TRANSACTION_HASH",
     similes: [
-        "NEWS_UPDATES",
-        "NEWS",
-        "UPDATES",
-        "NEWS_FEED",
-        "NEWS_UPDATE",
-        "LATEST_NEWS",
-        "LATEST_UPDATES",
-        "LATEST_NEWS_UPDATES",
-        "LATEST_NEWS_FEED",
-        "LATEST_NEWS_UPDATE",
-        "LATEST_UPDATES_FEED",
-        "CRYPTO_NEWS",
-        "CRYPTO_UPDATES",
-        "CRYPTO_NEWS_UPDATES",
-        "CRYPTO_NEWS_FEED",
-        "CRYPTO_NEWS_UPDATE",
-        "CRYPTO_LATEST_NEWS",
+        "VALIDATE_TRANSACTION_HASH",
+        "VALIDATE_TRANSACTION",
+        "VALIDATE_TRANSACTION_HASH",
+        "VALIDATE_TRANSACTION_HASH",
+        "TRANSACTION_HASH",
+        "TRANSACTION",
+        "TRANSACTION_HASH",
+        "TRANSACTION_HASH",
     ],
-    description: "Get User's Wallet Balance",
+    description: "Validates a transaction hash",
     validate: async (runtime: IAgentRuntime) => {
-        console.log("validate getNewsUpdatesAction");
+        console.log("validate transaction hash action");
         return true;
     },
     handler: async (
