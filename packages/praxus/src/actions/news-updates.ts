@@ -90,8 +90,22 @@ export const getNewsUpdatesAction: Action = {
             newsContent += `Latest News Update: \n`;
 
             for (let i = 0; i < news.length; i++) {
-                newsContent += `${news[i].title}: ${news[i].content} \n`;
+                newsContent += `${news[i].title} \n\n`;
             }
+
+            //             const aiFormatedContent = await generateMessageResponse({
+            //                 runtime,
+            //                 context:
+            //                     `rewrite this and format it properly to look presentable, remove link and add headers and also remove unecessary symbols
+            //                     remove this Already a subscriber? Log in.
+            // Want all of The Times? Subscribe.
+            // Advertisement
+            // SKIP ADVERTISEMENT
+            // Site Index
+            //  ------------------------------------------------
+            // ` + newsContent,
+            //                 modelClass: ModelClass.SMALL,
+            //             });
 
             if (callback) {
                 callback({

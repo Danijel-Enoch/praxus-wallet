@@ -1,10 +1,20 @@
 import type { Plugin } from "@elizaos/core";
-import { getWalletBalanceAction } from "./actions/wallet-balance";
+import {
+    CreateWalletAction,
+    getWalletBalanceAction,
+    getWalletPortfolioAction,
+    getNewsUpdatesAction,
+} from "./actions";
 
 export const praxusPlugin: Plugin = {
     name: "praxus",
     description: "Praxus plugin",
-    actions: [getWalletBalanceAction],
+    actions: [
+        getWalletBalanceAction,
+        getWalletPortfolioAction,
+        CreateWalletAction,
+        getNewsUpdatesAction,
+    ],
     evaluators: [],
     providers: [],
 };

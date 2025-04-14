@@ -7,6 +7,8 @@ export const createGetLatestNewsUpdatesService = () => {
             throw new Error("Invalid parameters");
         }
 
+        console.log("Getting Crypto News Updates for site:", site);
+
         try {
             // Simulate a response for demonstration purposes
             const response = (await webTrending(site)).results;
@@ -25,8 +27,11 @@ async function webTrending(media: string) {
     const client = tavily({
         apiKey: "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",
     });
-    return await client.search(`What is the latest trends on ${media} ?`, {
-        topic: "news",
-        searchDepth: "advanced",
-    });
+    return await client.search(
+        `What is the latest crypto news, ai news and updates on  ${media} ?`,
+        {
+            topic: "news",
+            searchDepth: "advanced",
+        }
+    );
 }
