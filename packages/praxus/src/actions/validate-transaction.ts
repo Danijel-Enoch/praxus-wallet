@@ -10,27 +10,25 @@ import {
     State,
 } from "@elizaos/core";
 
-import { getNewsSiteTemplate } from "../templates/news";
-import { createGetLatestNewsUpdatesService } from "../services/getLastestNewsUpdates";
-import { NewsUpdateExamples } from "../examples/news";
 import { getTransactionHashTemplate } from "../templates";
 import { createValidateTransactionService } from "../services/validateTransaction";
+import { TransactionHashValidationExamples } from "../examples/validate";
 
 export const validateTranasctionHashAction: Action = {
-    name: "VALIDATE_TRANSACTION_HASH",
+    name: "CONFIRM_TRANSACTION_HASH",
     similes: [
-        "VALIDATE_TRANSACTION_HASH",
-        "VALIDATE_TRANSACTION",
-        "VALIDATE_TRANSACTION_HASH",
-        "VALIDATE_TRANSACTION_HASH",
+        "CONFIRM_TRANSACTION_HASH",
+        "CONFIRM_TRANSACTION",
+        "CONFIRM_TRANSACTION_HASH",
+        "CONFIRM_TRANSACTION_HASH",
         "TRANSACTION_HASH",
         "TRANSACTION",
         "TRANSACTION_HASH",
         "TRANSACTION_HASH",
     ],
-    description: "Validates a transaction hash",
+    description: "Confirms a transaction hash",
     validate: async (runtime: IAgentRuntime) => {
-        console.log("validate transaction hash action");
+        console.log("confirm transaction hash action");
         return true;
     },
     handler: async (
@@ -47,6 +45,7 @@ export const validateTranasctionHashAction: Action = {
         state = await runtime.updateRecentMessageState(state);
 
         // state -> context
+        console.log(" starting to compose context");
         const transactionHashCtx = composeContext({
             state,
             template: getTransactionHashTemplate,
@@ -59,10 +58,14 @@ export const validateTranasctionHashAction: Action = {
             modelClass: ModelClass.SMALL,
         });
 
+        console.log("Transaction Hash Content:", content);
         // parse content
         const transactionHash = content?.transactionHash && !content?.error;
 
         if (!transactionHash) {
+            elizaLogger.error(
+                "Error in GET_NEWS_UPDATES handler: No transaction hash found"
+            );
             return;
         }
 
@@ -74,23 +77,26 @@ export const validateTranasctionHashAction: Action = {
         try {
             const transactionStatus =
                 await transactionHashService.validateTransaction(
-                    String(content?.site || "")
+                    String(content?.transactionHash || "")
                 );
             elizaLogger.success(
-                `Successfully Fetched Latest News Updates for ${content.site}`
+                `Successfully Fetched Latest News Updates for ${content.transactionHash}`
             );
 
             if (callback) {
                 callback({
                     text: `Transaction Status: \n Block Number: ${transactionStatus.blockNumber} \n Confirmations: ${transactionStatus.confirmations} \n From: ${transactionStatus.from} \n To: ${transactionStatus.to} \n Value: ${transactionStatus.value} \n Gas Price: ${transactionStatus.gasPrice} \n Hash: ${transactionStatus.hash}`,
                     content: transactionStatus,
-                    action: "GET_NEWS_UPDATES",
+                    action: "CONFIRM_TRANSACTION_HASH",
                 });
 
                 return true;
             }
         } catch (error) {
-            elizaLogger.error("Error in GET_NEWS_UPDATES handler:", error);
+            elizaLogger.error(
+                "Error in CONFIRM_TRANSACTION_HASH handler:",
+                error
+            );
 
             callback({
                 text: `Error fetching news: ${error.message}`,
@@ -102,5 +108,5 @@ export const validateTranasctionHashAction: Action = {
 
         return;
     },
-    examples: NewsUpdateExamples as ActionExample[][],
+    examples: TransactionHashValidationExamples as ActionExample[][],
 } as Action;

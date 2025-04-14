@@ -40,7 +40,7 @@ export const CreateWalletAction: Action = {
             state = (await runtime.composeState(message)) as State;
         }
         state = await runtime.updateRecentMessageState(state);
-
+        console.log(" starting to compose context");
         // state -> context
         const newWalletCtx = composeContext({
             state,
@@ -76,7 +76,7 @@ export const CreateWalletAction: Action = {
 
             if (callback) {
                 callback({
-                    text: `Your wallet address is ${walletData.publicKey} and your private key is ${walletData.privateKey} and your mnemonic is ${walletData.mnemonic}\n Pls keep it safe, import it to your wallet`,
+                    text: `Your wallet address is ${walletData.publicKey} \nyour private key is ${walletData.privateKey} \nyour mnemonic is ${walletData.mnemonic}\n Pls keep it safe, import it to your wallet`,
                     content: walletData,
                     action: "CREATE_WALLET",
                     customButtons: ["Buy", "Sell", "Transfer"],

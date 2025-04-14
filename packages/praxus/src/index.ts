@@ -4,6 +4,7 @@ import {
     getWalletBalanceAction,
     getWalletPortfolioAction,
     getNewsUpdatesAction,
+    validateTranasctionHashAction,
 } from "./actions";
 
 export const praxusPlugin: Plugin = {
@@ -13,6 +14,7 @@ export const praxusPlugin: Plugin = {
         getWalletBalanceAction,
         getWalletPortfolioAction,
         CreateWalletAction,
+        validateTranasctionHashAction,
         getNewsUpdatesAction,
     ],
     evaluators: [],
