@@ -10,6 +10,8 @@
 		"preview": "vite preview"
 	},
 	"dependencies": {
+		"@coinbase/onchainkit": "^0.38.10",
+		"@coinbase/wallet-sdk": "^4.3.2",
 		"@elizaos/core": "workspace:*",
 		"@radix-ui/react-avatar": "^1.1.2",
 		"@radix-ui/react-collapsible": "^1.1.2",
@@ -36,7 +38,7 @@
 		"semver": "^7.6.3",
 		"tailwind-merge": "^2.6.0",
 		"tailwindcss-animate": "^1.0.7",
-		"viem": "2.x",
+		"viem": "2.21.58",
 		"vite-plugin-compression": "^0.5.1",
 		"wagmi": "^2.14.16"
 	},
