@@ -20,7 +20,7 @@ import {
 // import { REST, Routes } from "discord.js";
 import type { DirectClient } from ".";
 import { validateUuid } from "@elizaos/core";
-import { createUser, updateUserPoints } from "./supabase";
+import { createUser, fetchUserDetails, updateUserPoints } from "./supabase";
 
 interface UUIDParams {
     agentId: UUID;
@@ -496,6 +496,23 @@ export function createApiRouter(
             }
             res.status(500).json({
                 error: "Error Occurred When Updating User Points",
+            });
+        }
+    });
+    router.post("/getuser/:address", async (req, res) => {
+        try {
+            const { address } = AddressParamSchema.parse(req.params);
+            const userdata = fetchUserDetails(address);
+            if (!userdata) {
+                return res.status(404).json({ error: "User not found" });
+            }
+            res.status(200).json(userdata);
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ error: error.errors });
+            }
+            res.status(500).json({
+                error: "Error Occurred When Fetching User",
             });
         }
     });

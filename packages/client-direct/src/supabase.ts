@@ -66,3 +66,18 @@ export async function updateUserPoints(walletAddress: string, points: number) {
 
     return data;
 }
+
+export async function fetchUserDetails(walletAddress: string) {
+    const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("address", walletAddress)
+        .single();
+
+    if (error) {
+        console.error("Error fetching user details:", error);
+        throw error;
+    }
+
+    return data;
+}

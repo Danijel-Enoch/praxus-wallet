@@ -10,6 +10,7 @@ import Overview from "./routes/overview";
 import Home from "./routes/home";
 import useVersion from "./hooks/use-version";
 import WalletProvider from "./providers/WalletProvider";
+import Referral from "./routes/referral";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -49,6 +50,10 @@ function App() {
                                             <Route
                                                 path="settings/:agentId"
                                                 element={<Overview />}
+                                            />
+                                            <Route
+                                                path="referral/:address"
+                                                element={<Referral />}
                                             />
                                         </Routes>
                                     </div>
