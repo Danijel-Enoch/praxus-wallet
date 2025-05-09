@@ -1,10 +1,10 @@
 import express from "express";
-import type { Router } from 'express';
+import type { Router } from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import fs from "fs";
-
+import { z } from "zod";
 import {
     type AgentRuntime,
     elizaLogger,
@@ -13,12 +13,14 @@ import {
     validateCharacterConfig,
     ServiceType,
     type Character,
+    stringToUuid,
 } from "@elizaos/core";
 
 // import type { TeeLogQuery, TeeLogService } from "@elizaos/plugin-tee-log";
 // import { REST, Routes } from "discord.js";
 import type { DirectClient } from ".";
 import { validateUuid } from "@elizaos/core";
+import { createUser, updateUserPoints } from "./supabase";
 
 interface UUIDParams {
     agentId: UUID;
@@ -54,7 +56,7 @@ function validateUUIDParams(
 export function createApiRouter(
     agents: Map<string, IAgentRuntime>,
     directClient: DirectClient
-):Router {
+): Router {
     const router = express.Router();
 
     router.use(cors());
@@ -83,7 +85,7 @@ export function createApiRouter(
         res.json({ agents: agentsList });
     });
 
-    router.get('/storage', async (req, res) => {
+    router.get("/storage", async (req, res) => {
         try {
             const uploadDir = path.join(process.cwd(), "data", "characters");
             const files = await fs.promises.readdir(uploadDir);
@@ -417,8 +419,9 @@ export function createApiRouter(
                     characterJson
                 );
             } else if (characterPath) {
-                character =
-                    await directClient.loadCharacterTryPath(characterPath);
+                character = await directClient.loadCharacterTryPath(
+                    characterPath
+                );
             } else {
                 throw new Error("No character path or JSON provided");
             }
@@ -452,6 +455,48 @@ export function createApiRouter(
             res.json({ success: true });
         } else {
             res.status(404).json({ error: "Agent not found" });
+        }
+    });
+    // Define Zod schemas
+    const AddressParamSchema = z.object({
+        address: z.string(),
+    });
+
+    const PointsParamSchema = z.object({
+        address: z.string(),
+        points: z
+            .string()
+            .regex(/^\d*\.?\d+$/)
+            .transform(Number),
+    });
+
+    router.post("/register/:address", async (req, res) => {
+        try {
+            const { address } = AddressParamSchema.parse(req.params);
+            await createUser(address, stringToUuid(address));
+            res.status(200).json({ success: true });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ error: error.errors });
+            }
+            res.status(500).json({
+                error: "Error Occurred When Creating User",
+            });
+        }
+    });
+
+    router.post("/addpoints/:address/:points", async (req, res) => {
+        try {
+            const { address, points } = PointsParamSchema.parse(req.params);
+            await updateUserPoints(address, points);
+            res.status(200).json({ success: true });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                return res.status(400).json({ error: error.errors });
+            }
+            res.status(500).json({
+                error: "Error Occurred When Updating User Points",
+            });
         }
     });
 

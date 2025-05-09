@@ -1,6 +1,8 @@
 import { cbWalletConnector } from "@/providers/WalletProvider";
-
 import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { apiClient } from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const truncateAddress = (address: string) => {
     if (!address) return "";
@@ -12,18 +14,49 @@ export default function ConnectWallet() {
     const { connect } = useConnect();
     const { disconnect } = useDisconnect();
 
+    const registerMutation = useMutation({
+        mutationFn: async (address: string) => {
+            return await apiClient.registerUser(address);
+        },
+    });
+
+    const handleConnect = async () => {
+        try {
+            await connect({ connector: cbWalletConnector });
+            if (address) {
+                await registerMutation.mutateAsync(address);
+            }
+        } catch (error) {
+            console.error("Failed to connect or register wallet:", error);
+        }
+    };
+
+    useEffect(() => {
+        if (isConnected && address) {
+            registerMutation.mutate(address);
+        }
+    }, [isConnected, address, registerMutation]);
+
     return (
         <div>
             {isConnected ? (
                 <div className="flex items-center gap-2">
                     <span>{truncateAddress(address || "")}</span>
-                    <button onClick={() => disconnect()}>Disconnect</button>
+                    <button
+                        onClick={() => disconnect()}
+                        disabled={registerMutation.isPending}
+                    >
+                        Disconnect
+                    </button>
                 </div>
             ) : (
                 <button
-                    onClick={() => connect({ connector: cbWalletConnector })}
+                    onClick={handleConnect}
+                    disabled={registerMutation.isPending}
                 >
-                    Connect Smart Wallet
+                    {registerMutation.isPending
+                        ? "Connecting..."
+                        : "Connect Smart Wallet"}
                 </button>
             )}
         </div>

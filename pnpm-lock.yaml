@@ -474,6 +474,9 @@ importers:
       '@elizaos/core':
         specifier: workspace:*
         version: link:../core
+      '@supabase/supabase-js':
+        specifier: ^2.49.1
+        version: 2.49.1(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       '@types/body-parser':
         specifier: 1.19.5
         version: 1.19.5

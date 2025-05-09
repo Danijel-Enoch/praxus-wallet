@@ -90,6 +90,10 @@ export const apiClient = {
         });
     },
     getAgents: () => fetcher({ url: "/agents" }),
+    registerUser: (address: string) =>
+        fetcher({ url: `/register/${address}`, method: "POST" }),
+    addpoints: (address: string, points: number) =>
+        fetcher({ url: `/addpoints/${address}/${points}`, method: "POST" }),
     getAgent: (agentId: string): Promise<{ id: UUID; character: Character }> =>
         fetcher({ url: `/agents/${agentId}` }),
     tts: (agentId: string, text: string) =>
