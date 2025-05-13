@@ -18,6 +18,7 @@ import {
 } from "./actions/dexscreener";
 import { TokenPriceEvaluator, tokenPriceEvaluator } from "./evaluators";
 import { getTopPools, SEARCH } from "./actions/dexpaprika/actions";
+import { sendEthAction } from "./actions/send-native";
 
 export const praxusPlugin: Plugin = {
     name: "praxus",
@@ -27,6 +28,7 @@ export const praxusPlugin: Plugin = {
         getWalletPortfolioAction,
         CreateWalletAction,
         validateTranasctionHashAction,
+        sendEthAction,
         getNewsUpdatesAction,
         new TokenPriceAction(),
         new LatestTokensAction(),

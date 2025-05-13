@@ -14,7 +14,7 @@ import { sendERC20Template, sendETHTemplate } from "../templates/wallet";
 import { createSendEthService } from "../services/sendEth";
 import { SendEthExamples } from "../examples/send";
 
-export const sendEthAction: Action = {
+export const sendTokenAction: Action = {
     name: "SEND_TOKEN",
     similes: ["SEND_TOKEN", "SEND_ERC20", "SEND_COIN", "SEND_ERC20_TOKEN"],
     description: "Send ERC20 tokens",
@@ -54,19 +54,19 @@ export const sendEthAction: Action = {
         const amount = content?.amount && !content?.error;
 
         if (!amount) {
-            elizaLogger.error("Error in SEND_ETH handler: No amount found");
+            elizaLogger.error("Error in SEND_ERC20 handler: No amount found");
             return;
         }
 
         const address = content?.address && !content?.error;
         if (!address) {
-            elizaLogger.error("Error in SEND_ETH handler: No address found");
+            elizaLogger.error("Error in SEND_ERC20 handler: No address found");
             return;
         }
 
         const token = content?.token && !content?.error;
         if (!token) {
-            elizaLogger.error("Error in SEND_ETH handler: No token found");
+            elizaLogger.error("Error in SEND_ERC20 handler: No token found");
             return;
         }
 
@@ -88,7 +88,7 @@ export const sendEthAction: Action = {
                 callback({
                     text: `Successfully created call data for ${content.amount} ETH to ${content.address}\nClick on the send button to send/sign Transaction`,
                     content: sendEthData,
-                    action: "SEND_ETH",
+                    action: "SEND_ERC20",
                     callData: sendEthData,
                     customButtons: ["Send", "Sign", "Transfer"],
                 });
@@ -96,7 +96,7 @@ export const sendEthAction: Action = {
                 return true;
             }
         } catch (error) {
-            elizaLogger.error("Error in SEND_ETH handler:", error);
+            elizaLogger.error("Error in SEND_ERC20 handler:", error);
 
             callback({
                 text: `Error fetching news: ${error.message}`,

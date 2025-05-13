@@ -24,7 +24,8 @@ import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
 import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
 import ShortCuts from "./short-cuts";
-//import { useAccount } from "wagmi";
+import { useAccount, useWalletClient } from "wagmi";
+//import { parseEther, type Hash } from "viem";
 
 type ExtraContentFields = {
     user: string;
@@ -32,7 +33,16 @@ type ExtraContentFields = {
     isLoading?: boolean;
 };
 
-type ContentWithUser = Content & ExtraContentFields;
+type CallData = {
+    to: `0x${string}`;
+    value?: string;
+    data?: `0x${string}`;
+};
+
+type ContentWithUser = Content &
+    ExtraContentFields & {
+        callData?: CallData;
+    };
 
 type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
     children?: React.ReactNode;
@@ -40,7 +50,8 @@ type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
 
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
-    // const { address } = useAccount();
+    const { address } = useAccount();
+    const { data: walletClient } = useWalletClient();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [input, setInput] = useState("");
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -162,6 +173,41 @@ export default function Page({ agentId }: { agentId: UUID }) {
         }
     };
 
+    const handleTransaction = async (callData: any) => {
+        try {
+            if (!walletClient || !address) {
+                toast({
+                    variant: "destructive",
+                    title: "Error",
+                    description: "Please connect your wallet first",
+                });
+                return;
+            }
+            console.log("callData", callData);
+            const tx = {
+                to: callData.to,
+                value: callData.value,
+                data: callData.data || "0x",
+                from: address,
+            };
+
+            const hash = await walletClient.sendTransaction(tx);
+
+            toast({
+                title: "Transaction Sent",
+                description: `Transaction hash: ${hash}`,
+            });
+
+            return hash;
+        } catch (error: any) {
+            toast({
+                variant: "destructive",
+                title: "Transaction Failed",
+                description: error.message,
+            });
+        }
+    };
+
     const messages =
         queryClient.getQueryData<ContentWithUser[]>(["messages", agentId]) ||
         [];
@@ -222,6 +268,21 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                                 message?.text
                                             )}
                                             {/* Attachments */}
+                                            {message?.callData ? (
+                                                <Button
+                                                    type="button"
+                                                    size="sm"
+                                                    className="ml-auto gap-1.5 h-[30px]"
+                                                    onClick={() =>
+                                                        handleTransaction(
+                                                            message.callData
+                                                        )
+                                                    }
+                                                >
+                                                    Send Tx
+                                                    <Send className="size-3.5" />
+                                                </Button>
+                                            ) : null}
                                             <div>
                                                 {message?.attachments?.map(
                                                     (
