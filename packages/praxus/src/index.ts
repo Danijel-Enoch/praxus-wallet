@@ -17,7 +17,7 @@ import {
     TopBoostedTokensAction,
 } from "./actions/dexscreener";
 import { TokenPriceEvaluator, tokenPriceEvaluator } from "./evaluators";
-import { GET_TOP_POOLS, SEARCH } from "./actions/dexpaprika/actions";
+import { getTopPools, SEARCH } from "./actions/dexpaprika/actions";
 
 export const praxusPlugin: Plugin = {
     name: "praxus",
@@ -32,6 +32,7 @@ export const praxusPlugin: Plugin = {
         new LatestTokensAction(),
         new LatestBoostedTokensAction(),
         new TopBoostedTokensAction(),
+        getTopPools,
     ],
     evaluators: [new TokenPriceEvaluator()],
     providers: [new TokenPriceProvider()],

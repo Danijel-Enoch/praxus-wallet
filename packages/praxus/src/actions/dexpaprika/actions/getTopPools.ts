@@ -8,6 +8,8 @@ import {
     type Memory,
     type State,
     type Action,
+    generateMessageResponse,
+    ModelClass,
 } from "@elizaos/core";
 import axios from "axios";
 import { z } from "zod";
@@ -45,28 +47,92 @@ export const GetTopPoolsSchema = z.object({
 
 export type GetTopPoolsContent = z.infer<typeof GetTopPoolsSchema> & Content;
 
-export const isGetTopPoolsContent = (
-    obj: unknown
-): obj is GetTopPoolsContent => {
-    return GetTopPoolsSchema.safeParse(obj).success;
-};
-
-// Create API client
 const createApiClient = (baseURL: string, apiKey?: string) => {
     const client = axios.create({ baseURL });
-
-    // Add API key if provided
     if (apiKey) {
         client.interceptors.request.use((config) => {
             config.headers["Authorization"] = `Bearer ${apiKey}`;
             return config;
         });
     }
-
     return client;
 };
 
-export const GET_TOP_POOLS = {
+const getDexPaprikaService = (config: any) => {
+    const client = createApiClient(
+        config.DEXPAPRIKA_API_URL,
+        config.DEXPAPRIKA_API_KEY
+    );
+
+    return {
+        async getTopPools(params: GetTopPoolsContent) {
+            const response = await client.get("/pools", {
+                params: {
+                    page: params.page,
+                    limit: params.limit,
+                    order_by: params.orderBy,
+                    sort: params.sort,
+                },
+            });
+
+            if (!response.data) {
+                throw new Error("No data received from DexPaprika API");
+            }
+
+            return response.data;
+        },
+    };
+};
+
+const formatPoolsResponse = (pools: any[], page_info: any) => {
+    const formattedPools = pools.map((pool, index) => {
+        const token0 = pool.tokens?.[0]?.symbol || "Token1";
+        const token1 = pool.tokens?.[1]?.symbol || "Token2";
+        const volumeFormatted = `$${Number(pool.volume_usd).toLocaleString()}`;
+        const priceFormatted = `$${Number(pool.price_usd).toLocaleString()}`;
+        const priceChange = pool.last_price_change_usd_24h
+            ? `${(pool.last_price_change_usd_24h * 100).toFixed(2)}%`
+            : "N/A";
+
+        return {
+            position: index + 1,
+            name: `${token0}-${token1}`,
+            dex: pool.dex_name,
+            network: pool.chain,
+            volume: volumeFormatted,
+            price: priceFormatted,
+            price_change_24h: priceChange,
+        };
+    });
+
+    const orderingText = `${page_info.order_by?.replace("_", " ")} (${
+        page_info.sort === "desc" ? "highest to lowest" : "lowest to highest"
+    })`;
+
+    const responseText = [
+        `Top Liquidity Pools Across All Networks (Page ${
+            page_info.page + 1
+        } of ${page_info.total_pages})`,
+        `Ordered by: ${orderingText}`,
+        `Total pools: ${page_info.total_items}`,
+        "",
+        ...formattedPools.map((pool) => {
+            return [
+                `${pool.position}. ${pool.name} (${pool.dex} on ${pool.network})`,
+                `   Volume: ${pool.volume}`,
+                `   Price: ${pool.price} (24h change: ${pool.price_change_24h})`,
+            ].join("\n");
+        }),
+    ].join("\n");
+
+    return {
+        text: responseText,
+        formattedPools,
+        page_info,
+    };
+};
+
+export const getTopPools: Action = {
     name: "GET_TOP_POOLS",
     similes: [
         "TOP_LIQUIDITY_POOLS",
@@ -74,12 +140,12 @@ export const GET_TOP_POOLS = {
         "HIGHEST_VOLUME_POOLS",
         "MOST_ACTIVE_POOLS",
     ],
-    validate: async (runtime: IAgentRuntime, message: Memory) => {
-        const content = message.content;
-        return isGetTopPoolsContent(content);
-    },
     description:
         "Get a paginated list of top liquidity pools from all networks",
+    validate: async (runtime: IAgentRuntime, message: Memory) => {
+        const content = message.content;
+        return GetTopPoolsSchema.safeParse(content).success;
+    },
     handler: async (
         runtime: IAgentRuntime,
         message: Memory,
@@ -89,111 +155,43 @@ export const GET_TOP_POOLS = {
     ): Promise<boolean> => {
         elizaLogger.log("Starting DexPaprika GET_TOP_POOLS handler...");
 
-        // Initialize or update state
-        let currentState = state;
-        if (!currentState) {
-            currentState = (await runtime.composeState(message)) as State;
-        } else {
-            currentState = await runtime.updateRecentMessageState(currentState);
+        // Initialize/update state
+        if (!state) {
+            state = (await runtime.composeState(message)) as State;
         }
+        state = await runtime.updateRecentMessageState(state);
 
         try {
             const content = message.content as GetTopPoolsContent;
-            const {
-                page = 0,
-                limit = 10,
-                orderBy = "volume_usd",
-                sort = "desc",
-            } = content;
-
-            // Get configuration
             const config = getConfig(runtime);
-            const client = createApiClient(
-                config.DEXPAPRIKA_API_URL,
-                config.DEXPAPRIKA_API_KEY
-            );
+            const dexPaprikaService = getDexPaprikaService(config);
 
             elizaLogger.log(
-                `Fetching top ${limit} pools ordered by ${orderBy} ${sort}...`
+                `Fetching top ${content.limit} pools ordered by ${content.orderBy} ${content.sort}...`
             );
-            const response = await client.get("/pools", {
-                params: {
-                    page,
-                    limit,
-                    order_by: orderBy,
-                    sort,
-                },
-            });
 
-            if (!response.data) {
-                throw new Error("No data received from DexPaprika API");
-            }
-
-            const { pools, page_info } = response.data;
-            const timestamp = new Date()
-                .toISOString()
-                .replace("T", " at ")
-                .substring(0, 19);
-
-            // Format pools for display
-            const formattedPools = pools.map((pool, index) => {
-                const token0 = pool.tokens?.[0]?.symbol || "Token1";
-                const token1 = pool.tokens?.[1]?.symbol || "Token2";
-                const volumeFormatted = `$${Number(
-                    pool.volume_usd
-                ).toLocaleString()}`;
-                const priceFormatted = `$${Number(
-                    pool.price_usd
-                ).toLocaleString()}`;
-                const priceChange = pool.last_price_change_usd_24h
-                    ? `${(pool.last_price_change_usd_24h * 100).toFixed(2)}%`
-                    : "N/A";
-
-                return {
-                    position: index + 1,
-                    name: `${token0}-${token1}`,
-                    dex: pool.dex_name,
-                    network: pool.chain,
-                    volume: volumeFormatted,
-                    price: priceFormatted,
-                    price_change_24h: priceChange,
-                };
-            });
-
-            // Create a readable text response
-            const orderingText = `${orderBy.replace("_", " ")} (${
-                sort === "desc" ? "highest to lowest" : "lowest to highest"
-            })`;
-
-            const responseText = [
-                `Top Liquidity Pools Across All Networks (Page ${
-                    page_info.page + 1
-                } of ${page_info.total_pages})`,
-                `Ordered by: ${orderingText}`,
-                `Total pools: ${page_info.total_items}`,
-                "",
-                ...formattedPools.map((pool) => {
-                    return [
-                        `${pool.position}. ${pool.name} (${pool.dex} on ${pool.network})`,
-                        `   Volume: ${pool.volume}`,
-                        `   Price: ${pool.price} (24h change: ${pool.price_change_24h})`,
-                    ].join("\n");
-                }),
-            ].join("\n");
+            const responseData = await dexPaprikaService.getTopPools(content);
+            const formattedResponse = formatPoolsResponse(
+                responseData.pools,
+                responseData.page_info
+            );
 
             elizaLogger.success(
-                `Successfully retrieved ${pools.length} top pools!`
+                `Successfully retrieved ${responseData.pools.length} top pools!`
             );
 
             if (callback) {
                 callback({
-                    text: responseText,
+                    text: formattedResponse.text,
                     content: {
-                        timestamp,
-                        pools: formattedPools,
-                        page_info: page_info,
-                        order_by: orderBy,
-                        sort: sort,
+                        timestamp: new Date()
+                            .toISOString()
+                            .replace("T", " at ")
+                            .substring(0, 19),
+                        pools: formattedResponse.formattedPools,
+                        page_info: formattedResponse.page_info,
+                        order_by: content.orderBy,
+                        sort: content.sort,
                     },
                 });
             }
@@ -202,7 +200,6 @@ export const GET_TOP_POOLS = {
         } catch (error) {
             elizaLogger.error("Error in GET_TOP_POOLS handler:", error);
 
-            // Enhanced error handling
             let errorMessage = "Error fetching top pools";
 
             if (axios.isAxiosError(error)) {
@@ -214,7 +211,7 @@ export const GET_TOP_POOLS = {
                         error.response?.data?.error || error.message
                     }`;
                 }
-            } else {
+            } else if (error instanceof Error) {
                 errorMessage = `Error: ${error.message}`;
             }
 
@@ -222,7 +219,10 @@ export const GET_TOP_POOLS = {
                 callback({
                     text: errorMessage,
                     content: {
-                        error: error.message,
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : "Unknown error",
                         statusCode: axios.isAxiosError(error)
                             ? error.response?.status
                             : undefined,
@@ -232,53 +232,7 @@ export const GET_TOP_POOLS = {
             return false;
         }
     },
-
     examples: [
-        [
-            {
-                user: "{{user1}}",
-                content: {
-                    text: "What are the top liquidity pools across all networks?",
-                },
-            },
-            {
-                user: "{{agent}}",
-                content: {
-                    text: "I'll find the top liquidity pools across all blockchain networks.",
-                    action: "GET_TOP_POOLS",
-                    limit: 5,
-                },
-            },
-            {
-                user: "{{agent}}",
-                content: {
-                    text: "Top Liquidity Pools Across All Networks (Page 1 of 20)\nOrdered by: volume usd (highest to lowest)\nTotal pools: 192\n\n1. WETH-USDC (Uniswap V3 on ethereum)\n   Volume: $270,705,394\n   Price: $1,824.32 (24h change: -2.15%)\n{{dynamic}}",
-                },
-            },
-        ],
-        [
-            {
-                user: "{{user1}}",
-                content: {
-                    text: "Show me liquidity pools with highest price change",
-                },
-            },
-            {
-                user: "{{agent}}",
-                content: {
-                    text: "I'll find the liquidity pools with the highest price changes in the last 24 hours.",
-                    action: "GET_TOP_POOLS",
-                    orderBy: "last_price_change_usd_24h",
-                    sort: "desc",
-                    limit: 5,
-                },
-            },
-            {
-                user: "{{agent}}",
-                content: {
-                    text: "Top Liquidity Pools Across All Networks (Page 1 of 20)\nOrdered by: last price change usd 24h (highest to lowest)\nTotal pools: 192\n\n1. ETH-USDT (SushiSwap on ethereum)\n   Volume: $15,305,224\n   Price: $1,821.54 (24h change: 8.32%)\n{{dynamic}}",
-                },
-            },
-        ],
+        // ...existing examples...
     ] as ActionExample[][],
-} as Action;
+};
