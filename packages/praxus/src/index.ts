@@ -6,6 +6,18 @@ import {
     getNewsUpdatesAction,
     validateTranasctionHashAction,
 } from "./actions";
+import { TokenPriceProvider, tokenPriceProvider } from "./providers";
+import {
+    LatestBoostedTokensAction,
+    latestBoostedTokensAction,
+    LatestTokensAction,
+    latestTokensAction,
+    TokenPriceAction,
+    tokenPriceAction,
+    TopBoostedTokensAction,
+} from "./actions/dexscreener";
+import { TokenPriceEvaluator, tokenPriceEvaluator } from "./evaluators";
+import { GET_TOP_POOLS, SEARCH } from "./actions/dexpaprika/actions";
 
 export const praxusPlugin: Plugin = {
     name: "praxus",
@@ -16,9 +28,13 @@ export const praxusPlugin: Plugin = {
         CreateWalletAction,
         validateTranasctionHashAction,
         getNewsUpdatesAction,
+        new TokenPriceAction(),
+        new LatestTokensAction(),
+        new LatestBoostedTokensAction(),
+        new TopBoostedTokensAction(),
     ],
-    evaluators: [],
-    providers: [],
+    evaluators: [new TokenPriceEvaluator()],
+    providers: [new TokenPriceProvider()],
 };
 export default praxusPlugin;
 

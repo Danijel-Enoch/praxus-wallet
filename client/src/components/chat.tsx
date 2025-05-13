@@ -24,7 +24,7 @@ import { AudioRecorder } from "./audio-recorder";
 import { Badge } from "./ui/badge";
 import { useAutoScroll } from "./ui/chat/hooks/useAutoScroll";
 import ShortCuts from "./short-cuts";
-import { useAccount } from "wagmi";
+//import { useAccount } from "wagmi";
 
 type ExtraContentFields = {
     user: string;
@@ -40,7 +40,7 @@ type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
 
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
-    const { address } = useAccount();
+    // const { address } = useAccount();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [input, setInput] = useState("");
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -123,7 +123,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
         }
     }, []);
 
-    const MyCustomAddedMessage = `\n This is the user's address: ${address}`;
+    //const MyCustomAddedMessage = `\n This is the user's address: ${address}`;
 
     const sendMessageMutation = useMutation({
         mutationKey: ["send_message", agentId],
@@ -133,12 +133,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
         }: {
             message: string;
             selectedFile?: File | null;
-        }) =>
-            apiClient.sendMessage(
-                agentId,
-                message + MyCustomAddedMessage,
-                selectedFile
-            ),
+        }) => apiClient.sendMessage(agentId, message, selectedFile),
         onSuccess: (newMessages: ContentWithUser[]) => {
             queryClient.setQueryData(
                 ["messages", agentId],
