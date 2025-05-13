@@ -200,9 +200,9 @@ export const AudioRecorder = ({
     // Effect to update the timer every second
     useEffect(() => {
         if (isRecording) {
-            timerTimeout = setTimeout(() => {
+            timerTimeout = window.setTimeout(() => {
                 setTimer(timer + 1);
-            }, 1000);
+            }, 1000) as unknown as NodeJS.Timeout;
         }
         return () => clearTimeout(timerTimeout);
     }, [isRecording, timer]);
