@@ -35,7 +35,7 @@ export default function ConnectWallet() {
         if (isConnected && address) {
             registerMutation.mutate(address);
         }
-    }, [isConnected, address, registerMutation]);
+    }, [isConnected, address]);
 
     return (
         <div>

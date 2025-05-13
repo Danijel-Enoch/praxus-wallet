@@ -31,7 +31,7 @@ export async function createUser(walletAddress: string, chatId: string) {
 
     if (error) {
         console.error("Error creating user:", error);
-        throw error;
+        // throw error;
     }
 
     return data;
