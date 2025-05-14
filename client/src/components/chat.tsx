@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ConnectWallet from "./connect-wallet";
 import {
     ChatBubble,
     ChatBubbleMessage,
@@ -27,6 +28,14 @@ import ShortCuts from "./short-cuts";
 import { useAccount, useWalletClient } from "wagmi";
 //import { parseEther, type Hash } from "viem";
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+
 type ExtraContentFields = {
     user: string;
     createdAt: number;
@@ -50,13 +59,14 @@ type AnimatedDivProps = AnimatedProps<{ style: React.CSSProperties }> & {
 
 export default function Page({ agentId }: { agentId: UUID }) {
     const { toast } = useToast();
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const { data: walletClient } = useWalletClient();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [input, setInput] = useState("");
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
+    const [showConnectDialog, setShowConnectDialog] = useState(false);
 
     const queryClient = useQueryClient();
 
@@ -87,6 +97,11 @@ export default function Page({ agentId }: { agentId: UUID }) {
     const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!input) return;
+
+        if (!isConnected) {
+            setShowConnectDialog(true);
+            return;
+        }
 
         const attachments: IAttachment[] | undefined = selectedFile
             ? [
@@ -228,6 +243,22 @@ export default function Page({ agentId }: { agentId: UUID }) {
 
     return (
         <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+            <Dialog
+                open={showConnectDialog}
+                onOpenChange={setShowConnectDialog}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Connect Your Wallet</DialogTitle>
+                        <DialogDescription>
+                            You need to connect your wallet to send messages.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-center p-4">
+                        <ConnectWallet />
+                    </div>
+                </DialogContent>
+            </Dialog>
             <div className="flex-1 overflow-y-auto">
                 <ChatMessageList
                     scrollRef={scrollRef}
