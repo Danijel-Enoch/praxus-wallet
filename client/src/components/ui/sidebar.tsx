@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { PanelLeft } from "lucide-react";
+// import { PanelLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -253,14 +253,14 @@ const Sidebar = React.forwardRef<
                         // Adjust the padding for floating and inset variants.
                         variant === "floating" || variant === "inset"
                             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
-                            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-r group-data-[side=right]:border-l",
+                            : "group-data-[collapsible=icon]:w-[--sidebar-width-icon] group-data-[side=left]:border-none group-data-[side=right]:border-l",
                         className
                     )}
                     {...props}
                 >
                     <div
                         data-sidebar="sidebar"
-                        className="flex m-4 rounded-md border w-full flex-col bg-card group-data-[variant=floating]:rounded-md group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+                        className="flex m-4 rounded-md border-none w-full flex-col bg-card/80  group-data-[variant=floating]:rounded-md group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
                     >
                         {children}
                     </div>
@@ -282,15 +282,22 @@ const SidebarTrigger = React.forwardRef<
             ref={ref}
             data-sidebar="trigger"
             variant="ghost"
-            size="icon"
-            className={cn("h-7 w-7", className)}
+            // size="lg"
+            className={cn("w-10 h-10", className)}
             onClick={(event) => {
                 onClick?.(event);
                 toggleSidebar();
             }}
             {...props}
         >
-            <PanelLeft />
+            {/* <PanelLeft className="" size={20} /> */}
+            <img
+                alt="praxus logo"
+                src="/close.png"
+                width="100%"
+                height="100%"
+                // className="py-2"
+            />
             <span className="sr-only">Toggle Sidebar</span>
         </Button>
     );

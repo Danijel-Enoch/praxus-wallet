@@ -35,6 +35,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
+import Start from "./Start";
 
 type ExtraContentFields = {
     user: string;
@@ -67,6 +68,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const [showConnectDialog, setShowConnectDialog] = useState(false);
+    const [isStart, setIsStart] = useState(true);
 
     const queryClient = useQueryClient();
 
@@ -96,6 +98,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
 
     const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        setIsStart(false);
         if (!input) return;
 
         if (!isConnected) {
@@ -242,7 +245,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
     }, [messages]);
 
     return (
-        <div className="flex flex-col w-full h-[calc(100dvh)] p-4">
+        <div className="flex flex-col w-[90%] container h-screen p-4">
             <Dialog
                 open={showConnectDialog}
                 onOpenChange={setShowConnectDialog}
@@ -259,7 +262,9 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     </div>
                 </DialogContent>
             </Dialog>
+                {isStart &&<Start />}
             <div className="flex-1 overflow-y-auto">
+
                 <ChatMessageList
                     scrollRef={scrollRef}
                     isAtBottom={isAtBottom}
@@ -284,7 +289,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                                 >
                                     {message?.user !== "user" ? (
                                         <Avatar className="size-8 p-1 border rounded-full select-none">
-                                            <AvatarImage src="/elizaos-icon.png" />
+                                            <AvatarImage src="/logo.png" />
                                         </Avatar>
                                     ) : null}
                                     <div className="flex flex-col">
@@ -389,15 +394,15 @@ export default function Page({ agentId }: { agentId: UUID }) {
                 </ChatMessageList>
             </div>
             <ShortCuts setInput={setInput} />
-            <div className="px-4 pb-4">
+            <div className="px-4 pb-4 ">
                 <form
                     ref={formRef}
                     onSubmit={handleSendMessage}
-                    className="relative rounded-md border bg-card"
+                    className="relative rounded-md border-none bg-gradient-to-r from-[#161D25] to-[#090F17]"
                 >
                     {selectedFile ? (
-                        <div className="p-3 flex">
-                            <div className="relative rounded-md border p-2">
+                        <div className="p-3 flex ">
+                            <div className="relative rounded-md border-none   p-2">
                                 <Button
                                     onClick={() => setSelectedFile(null)}
                                     className="absolute -right-2 -top-2 size-[22px] ring-2 ring-background"
@@ -422,7 +427,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
                         value={input}
                         onChange={({ target }) => setInput(target.value)}
                         placeholder="Type your message here..."
-                        className="min-h-12 resize-none rounded-md bg-card border-0 p-3 shadow-none focus-visible:ring-0"
+                        className="min-h-12 resize-none rounded-md bg-transparent border-0 p-3 shadow-none focus-visible:ring-0"
                     />
                     <div className="flex items-center p-3 pt-0">
                         <Tooltip>
@@ -466,9 +471,9 @@ export default function Page({ agentId }: { agentId: UUID }) {
                             size="sm"
                             className="ml-auto gap-1.5 h-[30px]"
                         >
-                            {sendMessageMutation?.isPending
+                            {/* {sendMessageMutation?.isPending
                                 ? "..."
-                                : "Send Message"}
+                                : "Send Message"} */}
                             <Send className="size-3.5" />
                         </Button>
                     </div>

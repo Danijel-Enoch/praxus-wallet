@@ -1,130 +1,77 @@
-//import { useQuery } from "@tanstack/react-query";
-import info from "@/lib/info.json";
+import * as React from "react";
 import {
     Sidebar,
     SidebarContent,
     SidebarFooter,
-    SidebarGroup,
-    SidebarGroupContent,
     SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
+    SidebarTrigger,
 } from "@/components/ui/sidebar";
-//import { apiClient } from "@/lib/api";
-import { NavLink } from "react-router";
-
-import { Book, Cog } from "lucide-react";
-import ConnectionStatus from "./connection-status";
-
 import ConnectWallet from "./connect-wallet";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { NavLink } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api";
 
-export function AppSidebar() {
-    // const location = useLocation();
-    // const query = useQuery({
-    //     queryKey: ["agents"],
-    //     queryFn: () => apiClient.getAgents(),
-    //     refetchInterval: 5_000,
-    // });
+export const AppSidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof Sidebar>>(
+    ({ className, ...props }, ref) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const query = useQuery({
+        queryKey: ["agents"],
+        queryFn: () => apiClient.getAgents(),
+        refetchInterval: 5_000
+    });
 
-    //const agents = query?.data?.agents;
-
+    const agents = query?.data?.agents;
+    console.log(agents)
     return (
-        <Sidebar>
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <NavLink to="/">
-                                <img
-                                    alt="elizaos-icon"
-                                    src="/elizaos-icon.png"
-                                    width="100%"
-                                    height="100%"
-                                    className="size-7"
-                                />
-
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">
-                                        Praxus
-                                    </span>
-                                    <span className="">v{info?.version}</span>
-                                </div>
-                            </NavLink>
-                        </SidebarMenuButton>
-                        <ConnectWallet />
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-            <SidebarContent>
-                <SidebarGroup>
-                    {/* <SidebarGroupLabel>Agents</SidebarGroupLabel> */}
-                    <SidebarGroupContent>
-                        {/* <SidebarMenu>
-                            {query?.isPending ? (
-                                <div>
-                                    {Array.from({ length: 5 }).map(
-                                        (_, _index) => (
-                                            <SidebarMenuItem
-                                                key={"skeleton-item"}
-                                            >
-                                                <SidebarMenuSkeleton />
-                                            </SidebarMenuItem>
-                                        )
-                                    )}
-                                </div>
-                            ) : (
-                                <div>
-                                    {agents?.map(
-                                        (agent: { id: UUID; name: string }) => (
-                                            <SidebarMenuItem key={agent.id}>
-                                                <NavLink
-                                                    to={`/chat/${agent.id}`}
-                                                >
-                                                    <SidebarMenuButton
-                                                        isActive={location.pathname.includes(
-                                                            agent.id
-                                                        )}
-                                                    >
-                                                        <User />
-                                                        <span>
-                                                            {agent.name}
-                                                        </span>
-                                                    </SidebarMenuButton>
-                                                </NavLink>
-                                            </SidebarMenuItem>
-                                        )
-                                    )}
-                                </div>
+        <Sidebar collapsible="icon" className={cn("w-[280px] min-w-[80px]", className)} ref={ref} {...props}>
+            <SidebarHeader className="flex flex-row border-b justify-between">
+                    <a href="/" className="flex items-center gap-4">
+                        <img
+                            alt="praxus logo"
+                            src={isOpen ? "/logo.png" : "/praxus.png"}
+                            className={cn(
+                                "transition-all duration-200",
+                                isOpen ? "w-28" : "w-44"
                             )}
-                        </SidebarMenu> */}
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                        />
+                    </a>
+                    <SidebarTrigger
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={cn(
+                        "hover:bg-accent hover:text-accent-foreground p-1 rounded-md",
+                        isOpen && "rotate-180 hidden"
+                    )}
+                />
+            </SidebarHeader>
+            <SidebarContent className="flex-1 justify-start items-center py-10 space-y-5">
+                <SidebarTrigger
+                    onClick={() => setIsOpen(!isOpen)}
+                    className={cn(
+                        "hover:bg-accent hover:text-accent-foreground p-1 rounded-md",
+                        isOpen ? "rotate-180 ":"hidden"
+                    )}
+                />
+                <NavLink 
+                    to={`/chat/${agents[0].id}`} 
+                    className={({ isActive }) => cn(
+                        "w-full h-fit  bg-gradient-to-br from-slate-200/20 to-emerald-100/0 rounded-sm  inline-flex justify-center items-center  gap-2 px-4 py-2",
+                        isActive && "bg-slate-200/30"
+                    )}
+                >
+                    <MessageCircle className="text-green-500"/>
+                    {!isOpen && <p className="">
+                        Chat
+                    </p>}
+                </NavLink>
             </SidebarContent>
             <SidebarFooter>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <NavLink
-                            to="https://elizaos.github.io/eliza/docs/intro/"
-                            target="_blank"
-                        >
-                            <SidebarMenuButton>
-                                <Book /> Documentation
-                            </SidebarMenuButton>
-                        </NavLink>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton
-                            onClick={() => {
-                                alert("Settings");
-                            }}
-                        >
-                            <Cog /> Settings
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <ConnectionStatus />
-                </SidebarMenu>
+                <ConnectWallet isOpen={isOpen} />
             </SidebarFooter>
         </Sidebar>
     );
-}
+});
+
+AppSidebar.displayName = "AppSidebar";

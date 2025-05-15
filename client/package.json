@@ -40,7 +40,7 @@
 		"tailwindcss-animate": "^1.0.7",
 		"viem": "2.19.3",
 		"vite-plugin-compression": "^0.5.1",
-		"wagmi": "2.12.1"
+		"wagmi": "^2.12.1"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.17.0",

@@ -6,9 +6,9 @@ export default {
     content: ["src/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
     theme: {
     	extend: {
-    		fontFamily: {
+			fontFamily: {
     			sans: [
-    				'Inter',
+    				'Raleway',
     				'ui-sans-serif',
     				'system-ui',
     				'sans-serif',

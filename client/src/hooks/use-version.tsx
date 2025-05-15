@@ -66,7 +66,9 @@ export default function useVersion() {
         }
     };
 
-    useEffect(() => {}, []);
+    useEffect(() => {
+        compareVersion()
+    }, []);
 
     return null;
 }

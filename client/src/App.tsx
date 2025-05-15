@@ -29,18 +29,21 @@ function App() {
                     className="dark antialiased"
                     style={{
                         colorScheme: "dark",
+                        
                     }}
                 >
-                    <BrowserRouter>
+                    <BrowserRouter >
                         <TooltipProvider delayDuration={0}>
-                            <SidebarProvider>
+                            <SidebarProvider className="">
                                 <AppSidebar />
-                                <SidebarInset>
-                                    <div className="flex flex-1 flex-col gap-4 size-full container">
-                                        <Routes>
+                                <SidebarInset className="relative">
+                                    <img src="/bglogo.png" className="absolute top-20 h-[70dvh] w-full z-0 object-contain"/>
+                                    <div className="flex flex-1 flex-col gap-4 size-full container bg-transparent">
+                                        <Routes >
                                             <Route
                                                 path="/"
                                                 element={<Home />}
+                                                
                                             />
                                             <Route
                                                 path="chat/:agentId"

@@ -1,12 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
     :root {
-        --background: 0 0% 100%;
+        --background: 218.6 77.78% 3.529%;
         --foreground: 240 10% 3.9%;
-        --card: 0 0% 93%;
+        --card: 210 13.64% 8.627%;
         --card-foreground: 240 10% 3.9%;
         --popover: 0 0% 100%;
         --popover-foreground: 240 10% 3.9%;
@@ -34,10 +36,11 @@
         --sidebar-ring: 217.2 91.2% 59.8%;
     }
 
+
     .dark {
-        --background: 0 0% 9%;
+        --background: 218.6 77.78% 3.529%;
         --foreground: 0 0% 98%;
-        --card: 0 0% 11.5%;
+        --card: 210 13.64% 8.627%;
         --card-foreground: 0 0% 98%;
         --popover: 0 0% 12%;
         --popover-foreground: 0 0% 98%;
@@ -73,4 +76,12 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+.text-gradient{
+  background: -webkit-linear-gradient(45deg, #FF6FD8 0%,  #3813C2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  position: relative;
 }

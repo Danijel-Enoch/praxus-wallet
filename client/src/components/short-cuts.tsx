@@ -1,4 +1,4 @@
-import { Wallet } from "lucide-react";
+import { ArrowRightIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
 const buttonData = [
@@ -48,10 +48,10 @@ export default function ShortCuts({ setInput }: { setInput: any }) {
                     key={index}
                     onClick={() => setInput(button.input)}
                     size="sm"
-                    className="ml-auto gap-1.5 h-[30px]"
+                    className="ml-auto gap-1.5 h-[30px] bg-gradient-to-r from-[#161D25] to-[#090F17] text-white rounded-sm"
                 >
                     {button.label}
-                    <Wallet className="size-3.5" />
+                    <ArrowRightIcon className="size-3.5" />
                 </Button>
             ))}
         </div>
