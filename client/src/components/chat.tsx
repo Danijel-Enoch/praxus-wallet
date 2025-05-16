@@ -138,6 +138,7 @@ export default function Page({ agentId }: { agentId: UUID }) {
 
         sendMessageMutation.mutate({
             message: input,
+            address: address as string,
             selectedFile: selectedFile ? selectedFile : null,
         });
 
@@ -158,11 +159,13 @@ export default function Page({ agentId }: { agentId: UUID }) {
         mutationKey: ["send_message", agentId],
         mutationFn: ({
             message,
+            address,
             selectedFile,
         }: {
             message: string;
+            address: string;
             selectedFile?: File | null;
-        }) => apiClient.sendMessage(agentId, message, selectedFile),
+        }) => apiClient.sendMessage(agentId, message, address, selectedFile),
         onSuccess: (newMessages: ContentWithUser[]) => {
             queryClient.setQueryData(
                 ["messages", agentId],
@@ -262,9 +265,8 @@ export default function Page({ agentId }: { agentId: UUID }) {
                     </div>
                 </DialogContent>
             </Dialog>
-                {isStart &&<Start />}
+            {isStart && <Start />}
             <div className="flex-1 overflow-y-auto">
-
                 <ChatMessageList
                     scrollRef={scrollRef}
                     isAtBottom={isAtBottom}

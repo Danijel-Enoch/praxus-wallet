@@ -98,10 +98,9 @@ async function registerDomainOnBehalf(domain: string, ownerAddress: string) {
         // Resolver address from your input
         resolverAddress: "0xC6d566A56A1aFf6508b41f6c90ff131615583BCD" as const,
         // Base mainnet RPC URL
-        rpcUrl: "https://base-mainnet.infura.io/v3/7c160b7a7c22491fbf0cd3e2c70ccd9d",
+        rpcUrl: process.env.PRAXUS_BASE_RPC,
         // Your wallet private key (loaded from .env)
-        privateKey:
-            "2f370490aa5e95b4b5fe5ddad7fbae3fa4a550119110c9b0c4f830326cc1cd52",
+        privateKey: process.env.PRAXUS_PRIVATE_KEY,
         // Domain details
         domainName: domain + "-praxus",
         ownerAddress,

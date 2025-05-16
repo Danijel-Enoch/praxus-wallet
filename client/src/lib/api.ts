@@ -72,12 +72,18 @@ export const apiClient = {
     sendMessage: (
         agentId: string,
         message: string,
+        address: string,
         selectedFile?: File | null
     ) => {
         const formData = new FormData();
         formData.append("text", message);
         formData.append("user", "user");
-        formData.append("bot", "bot");
+        formData.append("userName", "bot");
+        formData.append("userId", address);
+
+        // user id would be user address to string uuid
+        // then the string uuid would be mapped to the user address
+        // then call memmory to save and  get info on the app
 
         if (selectedFile) {
             formData.append("file", selectedFile);

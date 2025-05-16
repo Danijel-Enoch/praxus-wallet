@@ -47,6 +47,9 @@ export const getNewsUpdatesAction: Action = {
         _options: { [key: string]: unknown },
         callback: HandlerCallback
     ) => {
+        console.log({
+            state: state.danierieieiie,
+        });
         // Initialize/update state
         if (!state) {
             state = (await runtime.composeState(message)) as State;

@@ -296,6 +296,12 @@ export class DirectClient {
 
                 let state = await runtime.composeState(userMessage, {
                     agentName: runtime.character.name,
+                    danierieieiie: {
+                        xagentId: agentId,
+                        xroomId: roomId,
+                        xuserId: userId,
+                        x: req.body,
+                    },
                 });
 
                 const context = composeContext({
