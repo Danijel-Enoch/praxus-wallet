@@ -20,8 +20,16 @@ export const BuyBasenameAction: Action = {
         "PURCHASE_BASENAME",
         "GET_BASENAME",
         "REGISTER_BASENAME",
+        "ACQUIRE_BASENAME",
+        "ORDER_BASENAME",
+        "OBTAIN_BASENAME",
+        "SECURE_BASENAME",
+        "CLAIM_BASENAME",
+        "BUY_BASE_DOMAIN",
+        "GET_BASE_DOMAIN",
+        "REGISTER_BASE_DOMAIN",
     ],
-    description: "Purchase a basename with username and address",
+    description: "Purchase a basename",
     validate: async (runtime: IAgentRuntime) => {
         console.log("validate BuyBasenameAction");
         return true;
@@ -37,6 +45,8 @@ export const BuyBasenameAction: Action = {
         if (!state) {
             state = (await runtime.composeState(message)) as State;
         }
+        const { danierieieiie }: any = state;
+        let walletAddress: string | undefined = danierieieiie?.x.userId;
         state = await runtime.updateRecentMessageState(state);
 
         // Compose context using template
@@ -54,9 +64,8 @@ export const BuyBasenameAction: Action = {
 
         // Extract username and address
         const username = content?.username || state.username;
-        const address = content?.address || state.address;
 
-        if (!username || !address) {
+        if (!username || !walletAddress) {
             callback({
                 text: "Please provide both a username and address to purchase a basename",
                 content: { error: "Missing required fields" },
@@ -69,23 +78,23 @@ export const BuyBasenameAction: Action = {
             const basename = createBasenameService();
             const purchaseResult = await basename.registerDomain(
                 username as string,
-                address as string
+                walletAddress as string
             );
 
             elizaLogger.success(
                 `Successfully initiated basename purchase for ${username}`
             );
 
-            const text = `Initiating basename purchase for ${username} with address ${address}. Please wait for confirmation.\nTransaction Hash: https://basescan.com/tx/${purchaseResult.transactionHash}`;
+            const text = `Initiating basename purchase for ${username} with address ${walletAddress}. Please wait for confirmation.\nTransaction Hash: https://basescan.com/tx/${purchaseResult.transactionHash}`;
             callback({
                 text,
-                content: purchaseResult,
+                content: text,
                 action: "BUY_BASENAME",
                 customButtons: ["Check Status", "View Details"],
                 data: {
                     hash: purchaseResult.transactionHash,
                     username: username,
-                    address: address,
+                    address: walletAddress,
                 },
             });
             return true;

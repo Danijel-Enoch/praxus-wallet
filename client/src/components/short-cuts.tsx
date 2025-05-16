@@ -20,6 +20,10 @@ const buttonData = [
         label: "Crypto Updates/News",
         input: "Get me latest crypto news and updates ",
     },
+    {
+        label: "Get a base name",
+        input: "My name is __name__, get a base name for me",
+    },
 ];
 
 export default function ShortCuts({ setInput }: { setInput: any }) {

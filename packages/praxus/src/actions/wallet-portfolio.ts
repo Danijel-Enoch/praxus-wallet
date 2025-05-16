@@ -52,6 +52,8 @@ export const getWalletPortfolioAction: Action = {
             state = (await runtime.composeState(message)) as State;
         }
         state = await runtime.updateRecentMessageState(state);
+        const { danierieieiie }: any = state;
+        let walletAddress: string | undefined = danierieieiie?.x.userId;
 
         // state -> context
         const newWalletCtx = composeContext({
@@ -68,13 +70,13 @@ export const getWalletPortfolioAction: Action = {
 
         // parse content
         const chain = content?.chain && !content?.error;
-        const address = content?.address && !content?.error;
-        if (!address) {
-            return;
-        }
 
+        console.log({ walletAddress });
+        if (!walletAddress) {
+            throw new Error("No wallet address provided");
+        }
         if (!chain) {
-            return;
+            throw new Error("No chain provided");
         }
 
         // Instantiate API service

@@ -19,6 +19,7 @@ import {
 import { TokenPriceEvaluator, tokenPriceEvaluator } from "./evaluators";
 import { getTopPools, SEARCH } from "./actions/dexpaprika/actions";
 import { sendEthAction } from "./actions/send-native";
+import { BuyBasenameAction } from "./actions/buy-basename";
 
 export const praxusPlugin: Plugin = {
     name: "praxus",
@@ -35,6 +36,7 @@ export const praxusPlugin: Plugin = {
         new LatestBoostedTokensAction(),
         new TopBoostedTokensAction(),
         getTopPools,
+        BuyBasenameAction,
     ],
     evaluators: [new TokenPriceEvaluator()],
     providers: [],
