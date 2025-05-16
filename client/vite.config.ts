@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
             ),
             "import.meta.env.VITE_SERVER_BASE_URL": JSON.stringify(
                 env.SERVER_BASE_URL
-            )
+            ),
         },
         build: {
             outDir: "dist",
@@ -35,6 +35,9 @@ export default defineConfig(({ mode }) => {
             cssMinify: true,
             sourcemap: false,
             cssCodeSplit: true,
+        },
+        server: {
+            port: env.VITE_PORT,
         },
         resolve: {
             alias: {
