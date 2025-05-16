@@ -9,7 +9,12 @@ if (import.meta.env.PRODUCTION === "true") {
         import.meta.env.VITE_SERVER_PORT
     }`;
 }
-console.log({ BASE_URL });
+console.log(
+    { BASE_URL },
+    import.meta.env.PRODUCTION,
+    import.meta.env.VITE_SERVER_PORT,
+    import.meta.env.VITE_SERVER_URL
+);
 
 const fetcher = async ({
     url,
