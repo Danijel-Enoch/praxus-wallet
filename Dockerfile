@@ -75,7 +75,7 @@ COPY --from=builder /app/eliza/scripts ./scripts
 COPY --from=builder /app/eliza/characters ./characters
 
 # Expose necessary ports
-EXPOSE 3000 5173
+EXPOSE 3022 5173
 
 # Command to start the application
 CMD ["sh", "-c", "pnpm start & pnpm start:client"]
