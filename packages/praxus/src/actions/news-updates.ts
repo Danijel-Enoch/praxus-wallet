@@ -93,7 +93,11 @@ export const getNewsUpdatesAction: Action = {
             newsContent += `Latest News Update: \n`;
 
             for (let i = 0; i < news.length; i++) {
-                newsContent += `${news[i].title} \n\n`;
+                newsContent += `📰 ${i + 1}. ${news[i].title}\n`;
+                if (news[i].content) {
+                    newsContent += `   ${news[i].content}\n`;
+                }
+                newsContent += "\n";
             }
 
             //             const aiFormatedContent = await generateMessageResponse({

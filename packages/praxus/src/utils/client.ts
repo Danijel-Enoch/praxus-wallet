@@ -1273,33 +1273,83 @@ class BaseClient {
 
     constructor(baseURL: string, options: ClientOptions) {
         this.baseURL = baseURL;
-        this.headers = {};
-
-        // Add User-Agent header if the script is running in the server
-        // because browsers do not allow setting User-Agent headers to requests
-        if (typeof window === "undefined") {
-            this.headers["User-Agent"] =
-                "terminal-api-6vbi-Generated-TS-Client (Encore/v1.46.4)";
-        }
-
+        this.fetcher = options.fetcher ?? boundFetch;
+        this.headers = options.headers ?? {};
         this.requestInit = options.requestInit ?? {};
+        this.authGenerator = options.authGenerator;
+    }
 
-        // Setup what fetch function we'll be using in the base client
-        if (options.fetcher !== undefined) {
-            this.fetcher = options.fetcher;
-        } else {
-            this.fetcher = boundFetch;
+    // Utility method to handle common errors
+    private handleCommonErrors(error: unknown): never {
+        if (
+            error instanceof TypeError &&
+            error.message.includes("Failed to fetch")
+        ) {
+            throw new APIError(503, {
+                code: ErrCode.Unavailable,
+                message: "Network error: Failed to connect to server",
+            });
         }
 
-        // Setup an authentication data generator using the auth data token option
-        if (options.auth !== undefined) {
-            const auth = options.auth;
-            if (typeof auth === "function") {
-                this.authGenerator = auth;
-            } else {
-                this.authGenerator = () => auth;
+        if (error instanceof Error) {
+            throw new APIError(500, {
+                code: ErrCode.Internal,
+                message: error.message,
+            });
+        }
+
+        throw new APIError(500, {
+            code: ErrCode.Unknown,
+            message: "An unknown error occurred",
+        });
+    }
+
+    // Utility method to handle API error responses
+    private async handleErrorResponse(response: Response): Promise<never> {
+        let body: APIErrorResponse = {
+            code: ErrCode.Unknown,
+            message: `Request failed: status ${response.status}`,
+        };
+
+        try {
+            const text = await response.text();
+            try {
+                const jsonBody = JSON.parse(text);
+                if (isAPIErrorResponse(jsonBody)) {
+                    body = jsonBody;
+                } else {
+                    body.message += `: ${JSON.stringify(jsonBody)}`;
+                }
+            } catch {
+                body.message += `: ${text}`;
             }
+        } catch (e) {
+            body.message += `: ${String(e)}`;
         }
+
+        // Map HTTP status codes to error codes
+        switch (response.status) {
+            case 401:
+                body.code = ErrCode.Unauthenticated;
+                break;
+            case 403:
+                body.code = ErrCode.PermissionDenied;
+                break;
+            case 404:
+                body.code = ErrCode.NotFound;
+                break;
+            case 409:
+                body.code = ErrCode.AlreadyExists;
+                break;
+            case 429:
+                body.code = ErrCode.ResourceExhausted;
+                break;
+            case 503:
+                body.code = ErrCode.Unavailable;
+                break;
+        }
+
+        throw new APIError(response.status, body);
     }
 
     async getAuthData(): Promise<CallParameters | undefined> {
@@ -1428,60 +1478,39 @@ class BaseClient {
             body: body ?? null,
         };
 
-        // Merge our headers with any predefined headers
         init.headers = { ...this.headers, ...init.headers, ...headers };
 
-        // Fetch auth data if there is any
-        const authData = await this.getAuthData();
+        try {
+            // Fetch auth data if there is any
+            const authData = await this.getAuthData();
 
-        // If we now have authentication data, add it to the request
-        if (authData) {
-            if (authData.query) {
-                query = { ...query, ...authData.query };
-            }
-            if (authData.headers) {
-                init.headers = { ...init.headers, ...authData.headers };
-            }
-        }
-
-        // Make the actual request
-        const queryString = query ? "?" + encodeQuery(query) : "";
-        const response = await this.fetcher(
-            this.baseURL + path + queryString,
-            init
-        );
-
-        // handle any error responses
-        if (!response.ok) {
-            // try and get the error message from the response body
-            let body: APIErrorResponse = {
-                code: ErrCode.Unknown,
-                message: `request failed: status ${response.status}`,
-            };
-
-            // if we can get the structured error we should, otherwise give a best effort
-            try {
-                const text = await response.text();
-
-                try {
-                    const jsonBody = JSON.parse(text);
-                    if (isAPIErrorResponse(jsonBody)) {
-                        body = jsonBody;
-                    } else {
-                        body.message += ": " + JSON.stringify(jsonBody);
-                    }
-                } catch {
-                    body.message += ": " + text;
+            // If we now have authentication data, add it to the request
+            if (authData) {
+                if (authData.query) {
+                    query = { ...query, ...authData.query };
                 }
-            } catch (e) {
-                // otherwise we just append the text to the error message
-                body.message += ": " + String(e);
+                if (authData.headers) {
+                    init.headers = { ...init.headers, ...authData.headers };
+                }
             }
 
-            throw new APIError(response.status, body);
-        }
+            const queryString = query ? "?" + encodeQuery(query) : "";
+            const response = await this.fetcher(
+                this.baseURL + path + queryString,
+                init
+            );
 
-        return response;
+            if (!response.ok) {
+                await this.handleErrorResponse(response);
+            }
+
+            return response;
+        } catch (error) {
+            if (error instanceof APIError) {
+                throw error;
+            }
+            this.handleCommonErrors(error);
+        }
     }
 }
 

@@ -17,6 +17,11 @@ import {
     type Memory,
     type Plugin,
 } from "@elizaos/core";
+import {
+    GoogleGenAI,
+    createUserContent,
+    createPartFromUri,
+} from "@google/genai";
 import bodyParser from "body-parser";
 import cors from "cors";
 import express, { type Request as ExpressRequest } from "express";
@@ -157,7 +162,7 @@ export class DirectClient {
             "/:agentId/whisper",
             upload.single("file"),
             async (req: CustomRequest, res: express.Response) => {
-                const audioFile = req.file; // Access the uploaded file using req.file
+                const audioFile = req.file;
                 const agentId = req.params.agentId;
 
                 if (!audioFile) {
@@ -166,7 +171,7 @@ export class DirectClient {
                 }
 
                 let runtime = this.agents.get(agentId);
-                const apiKey = runtime.getSetting("OPENAI_API_KEY");
+                // const apiKey = runtime.getSetting("GOOGLE_API_KEY");
 
                 // if runtime is null, look for runtime with the same name
                 if (!runtime) {
@@ -182,16 +187,39 @@ export class DirectClient {
                     return;
                 }
 
-                const openai = new OpenAI({
-                    apiKey,
-                });
+                // if (!apiKey) {
+                //     res.status(500).send("Google API key not configured");
+                //     return;
+                // }
 
-                const transcription = await openai.audio.transcriptions.create({
-                    file: fs.createReadStream(audioFile.path),
-                    model: "whisper-1",
-                });
+                try {
+                    const ai = new GoogleGenAI({
+                        apiKey: "AIzaSyDvp9y7L6Z7xexUKnTbeNVFfsS2Yac7LSw",
+                    });
 
-                res.json(transcription);
+                    const uploadedFile = await ai.files.upload({
+                        file: audioFile.path,
+                        config: { mimeType: audioFile.mimetype },
+                    });
+
+                    const result = await ai.models.generateContent({
+                        model: "gemini-2.0-flash",
+                        contents: createUserContent([
+                            createPartFromUri(
+                                uploadedFile.uri,
+                                uploadedFile.mimeType
+                            ),
+                            "Generate a transcript of the speech.",
+                        ]),
+                    });
+
+                    res.json({ text: result.text });
+                } catch (error) {
+                    res.status(500).json({
+                        error: "Error transcribing audio",
+                        details: error.message,
+                    });
+                }
             }
         );
 

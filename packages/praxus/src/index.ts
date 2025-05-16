@@ -37,7 +37,7 @@ export const praxusPlugin: Plugin = {
         getTopPools,
     ],
     evaluators: [new TokenPriceEvaluator()],
-    providers: [new TokenPriceProvider()],
+    providers: [],
 };
 export default praxusPlugin;
 

@@ -1,21 +1,49 @@
 // To install: npm i @tavily/core
 import { tavily } from "@tavily/core";
+import { elizaLogger } from "@elizaos/core";
 
 export const createGetLatestNewsUpdatesService = () => {
     const getNewsUpdate = async (site: string) => {
         if (!site) {
-            throw new Error("Invalid parameters");
+            throw new Error("Site parameter is required");
         }
 
-        console.log("Getting Crypto News Updates for site:", site);
+        elizaLogger.info("Getting Crypto News Updates for site:", site);
 
         try {
-            // Simulate a response for demonstration purposes
-            const response = (await webTrending(site)).results;
-            return response;
+            const response = await webTrending(site);
+
+            if (!response?.results) {
+                throw new Error("No results found");
+            }
+
+            elizaLogger.success(
+                `Successfully retrieved news updates for ${site}`
+            );
+            return response.results;
         } catch (error) {
-            console.error("Getting Crypto News Error OCCURED:", error.message);
-            throw error;
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred";
+            elizaLogger.error("Error retrieving news updates:", {
+                site,
+                error: errorMessage,
+            });
+
+            // Add specific error handling for common cases
+            if (errorMessage.includes("rate limit")) {
+                throw new Error(
+                    "API rate limit exceeded. Please try again later."
+                );
+            }
+
+            if (errorMessage.includes("not found")) {
+                throw new Error(`Could not find news for site: ${site}`);
+            }
+
+            // Rethrow with more context
+            throw new Error(`Failed to get news updates: ${errorMessage}`);
         }
     };
 

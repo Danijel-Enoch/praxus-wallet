@@ -41,43 +41,54 @@ export const getWalletBalanceAction: Action = {
         _options: { [key: string]: unknown },
         callback: HandlerCallback
     ) => {
-        // Initialize/update state
-        if (!state) {
-            state = (await runtime.composeState(message)) as State;
-        }
-        state = await runtime.updateRecentMessageState(state);
-
-        // state -> context
-        const addressCtx = composeContext({
-            state,
-            template: getWalletAddressTemplate,
-        });
-
-        // context -> content
-        const content = await generateMessageResponse({
-            runtime,
-            context: addressCtx,
-            modelClass: ModelClass.SMALL,
-        });
-
-        // parse content
-        const address = content?.address && !content?.error;
-
-        if (!address) {
-            return;
-        }
-
-        // Instantiate API service
-        // const config = await validateOpenWeatherConfig(runtime);
-        const walletService = createWalletBalanceService();
-
-        // Fetch weather & respond
         try {
-            const walletData = await walletService.getBalance(
-                String(content?.address || "")
-            );
+            const { danierieieiie }: any = state;
+            let walletAddress: string | undefined = danierieieiie?.x.userId;
+            // Initialize/update state
+            if (!state) {
+                state = (await runtime.composeState(message)) as State;
+            }
+
+            try {
+                // Safely access state with error handling
+                if (danierieieiie?.x) {
+                    console.log({
+                        thisIsWalletBalance: danierieieiie.x.userId,
+                    });
+                }
+            } catch (stateError) {
+                elizaLogger.warn(
+                    "Error accessing state properties:",
+                    stateError
+                );
+            }
+
+            state = await runtime.updateRecentMessageState(state);
+
+            // state -> context
+            const addressCtx = composeContext({
+                state,
+                template: getWalletAddressTemplate,
+            });
+
+            // context -> content
+            const content: any = await generateMessageResponse({
+                runtime,
+                context: addressCtx,
+                modelClass: ModelClass.SMALL,
+            });
+            console.log({ walletAddress });
+            if (!walletAddress) {
+                throw new Error("No wallet address provided");
+            }
+
+            // Instantiate API service
+            const walletService = createWalletBalanceService();
+
+            // Fetch wallet balance
+            const walletData = await walletService.getBalance(walletAddress);
             elizaLogger.success(
-                `Successfully fetched weather for ${content.city}, ${content.country}`
+                `Successfully fetched wallet balance for address ${walletAddress}`
             );
 
             if (callback) {
@@ -87,21 +98,29 @@ export const getWalletBalanceAction: Action = {
                     action: "GET_WALLET_BALANCE",
                     customButtons: ["Buy", "Sell", "Transfer"],
                 });
-
                 return true;
             }
         } catch (error) {
-            elizaLogger.error("Error in GET_CURRENT_WEATHER handler:", error);
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred";
+            elizaLogger.error(
+                "Error in GET_WALLET_BALANCE handler:",
+                errorMessage
+            );
 
-            callback({
-                text: `Error fetching weather: ${error.message}`,
-                content: { error: error.message },
-            });
-
+            if (callback) {
+                callback({
+                    text: `Error fetching wallet balance: ${errorMessage}`,
+                    content: { error: errorMessage },
+                    action: "GET_WALLET_BALANCE",
+                });
+            }
             return false;
         }
 
-        return;
+        return false;
     },
     examples: WalletBalanceExamples as ActionExample[][],
 } as Action;

@@ -2,6 +2,7 @@ import { ethers, Wallet } from "ethers";
 // Imports the Alchemy SDK
 import { Alchemy, Network, TransactionResponse } from "alchemy-sdk";
 import { alchemyApiKey } from "../const";
+import { elizaLogger } from "@elizaos/core";
 
 // Configures the Alchemy SDK
 const config = {
@@ -17,17 +18,38 @@ export const createValidateTransactionService = () => {
         transactionHash: string
     ): Promise<TransactionResponse> => {
         if (!transactionHash) {
-            throw new Error("Invalid transaction hash");
+            throw new Error("Transaction hash is required");
+        }
+
+        if (!alchemyApiKey) {
+            throw new Error("Alchemy API key is not configured");
         }
 
         try {
             const response = await alchemy.transact.getTransaction(
                 transactionHash
             );
+
+            if (!response) {
+                throw new Error(`Transaction ${transactionHash} not found`);
+            }
+
+            elizaLogger.success(
+                `Successfully validated transaction ${transactionHash}`
+            );
             return response;
         } catch (error) {
-            console.error("Creating Wallet Error OCCURED:", error.message);
-            throw error;
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred";
+            elizaLogger.error("Error validating transaction:", {
+                transactionHash,
+                error: errorMessage,
+            });
+
+            // Rethrow with more context
+            throw new Error(`Failed to validate transaction: ${errorMessage}`);
         }
     };
 

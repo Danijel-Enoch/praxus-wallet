@@ -13,3 +13,5 @@ Example response:
 {{recentMessages}}
 Extract the  address from the most recent message.
 Respond with a JSON markdown block containing the transaction hash.`;
+
+export { swapTemplate } from "./swap";
