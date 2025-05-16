@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
             cssCodeSplit: true,
         },
         server: {
-            port: env.VITE_PORT,
+            port: Number(env.VITE_PORT) || 5273,
         },
         resolve: {
             alias: {
