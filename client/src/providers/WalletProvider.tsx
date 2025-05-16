@@ -3,7 +3,7 @@ import { createConfig, WagmiProvider, http } from "wagmi";
 
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { coinbaseWallet } from "wagmi/connectors";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { useState } from "react";
 
 export const cbWalletConnector = coinbaseWallet({
@@ -12,13 +12,13 @@ export const cbWalletConnector = coinbaseWallet({
 });
 
 export const config = createConfig({
-    chains: [baseSepolia],
+    chains: [base],
     // turn off injected provider discovery
     multiInjectedProviderDiscovery: false,
     connectors: [cbWalletConnector],
     ssr: false,
     transports: {
-        [baseSepolia.id]: http(),
+        [base.id]: http(),
     },
 });
 

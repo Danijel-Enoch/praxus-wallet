@@ -36,6 +36,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Start from "./Start";
+import { base } from "viem/chains";
 
 type ExtraContentFields = {
     user: string;
@@ -212,7 +213,10 @@ export default function Page({ agentId }: { agentId: UUID }) {
                 from: address,
             };
 
-            const hash = await walletClient.sendTransaction(tx);
+            const hash = await walletClient.sendTransaction({
+                ...tx,
+                chain: base,
+            });
 
             toast({
                 title: "Transaction Sent",
