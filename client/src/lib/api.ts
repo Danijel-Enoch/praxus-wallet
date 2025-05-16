@@ -2,7 +2,7 @@ import type { UUID, Character } from "@elizaos/core";
 
 let BASE_URL;
 
-if (import.meta.env.PRODUCTION === "true") {
+if (import.meta.env.APP_PRODUCTION === "true") {
     BASE_URL = import.meta.env.VITE_SERVER_URL;
 } else {
     BASE_URL = `${import.meta.env.VITE_SERVER_URL}:${
@@ -11,7 +11,7 @@ if (import.meta.env.PRODUCTION === "true") {
 }
 console.log(
     { BASE_URL },
-    import.meta.env.PRODUCTION,
+    import.meta.env.APP_PRODUCTION,
     import.meta.env.VITE_SERVER_PORT,
     import.meta.env.VITE_SERVER_URL
 );

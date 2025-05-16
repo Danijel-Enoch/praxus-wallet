@@ -28,8 +28,8 @@ export default defineConfig(({ mode }) => {
             "import.meta.env.VITE_SERVER_BASE_URL": JSON.stringify(
                 env.SERVER_BASE_URL
             ),
-            "import.meta.env.PRODUCTION": JSON.stringify(
-                env.PRODUCTION || "false"
+            "import.meta.env.APP_PRODUCTION": JSON.stringify(
+                env.APP_PRODUCTION || "false"
             ),
         },
         build: {
