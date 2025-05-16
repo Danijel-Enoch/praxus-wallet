@@ -14,31 +14,38 @@ import { MessageCircle } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 
-export const AppSidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<typeof Sidebar>>(
-    ({ className, ...props }, ref) => {
+export const AppSidebar = React.forwardRef<
+    HTMLDivElement,
+    React.ComponentProps<typeof Sidebar>
+>(({ className, ...props }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const query = useQuery({
         queryKey: ["agents"],
         queryFn: () => apiClient.getAgents(),
-        refetchInterval: 5_000
+        refetchInterval: 5_000,
     });
 
     const agents = query?.data?.agents;
-    console.log(agents)
+    console.log({ agents });
     return (
-        <Sidebar collapsible="icon" className={cn("w-[280px] min-w-[80px]", className)} ref={ref} {...props}>
+        <Sidebar
+            collapsible="icon"
+            className={cn("w-[280px] min-w-[80px]", className)}
+            ref={ref}
+            {...props}
+        >
             <SidebarHeader className="flex flex-row border-b justify-between">
-                    <a href="/" className="flex items-center gap-4">
-                        <img
-                            alt="praxus logo"
-                            src={isOpen ? "/logo.png" : "/praxus.png"}
-                            className={cn(
-                                "transition-all duration-200",
-                                isOpen ? "w-28" : "w-44"
-                            )}
-                        />
-                    </a>
-                    <SidebarTrigger
+                <a href="/" className="flex items-center gap-4">
+                    <img
+                        alt="praxus logo"
+                        src={isOpen ? "/logo.png" : "/praxus.png"}
+                        className={cn(
+                            "transition-all duration-200",
+                            isOpen ? "w-28" : "w-44"
+                        )}
+                    />
+                </a>
+                <SidebarTrigger
                     onClick={() => setIsOpen(!isOpen)}
                     className={cn(
                         "hover:bg-accent hover:text-accent-foreground p-1 rounded-md",
@@ -51,21 +58,23 @@ export const AppSidebar = React.forwardRef<HTMLDivElement, React.ComponentProps<
                     onClick={() => setIsOpen(!isOpen)}
                     className={cn(
                         "hover:bg-accent hover:text-accent-foreground p-1 rounded-md",
-                        isOpen ? "rotate-180 ":"hidden"
+                        isOpen ? "rotate-180 " : "hidden"
                     )}
                 />
-                <NavLink 
-                    to={`/chat/${agents[0].id}`} 
-                    className={({ isActive }) => cn(
-                        "w-full h-fit  bg-gradient-to-br from-slate-200/20 to-emerald-100/0 rounded-sm  inline-flex justify-center items-center  gap-2 px-4 py-2",
-                        isActive && "bg-slate-200/30"
-                    )}
-                >
-                    <MessageCircle className="text-green-500"/>
-                    {!isOpen && <p className="">
-                        Chat
-                    </p>}
-                </NavLink>
+                {agents && agents.length > 0 ? (
+                    <NavLink
+                        to={`/chat/${agents[0].id}`}
+                        className={({ isActive }) =>
+                            cn(
+                                "w-full h-fit  bg-gradient-to-br from-slate-200/20 to-emerald-100/0 rounded-sm  inline-flex justify-center items-center  gap-2 px-4 py-2",
+                                isActive && "bg-slate-200/30"
+                            )
+                        }
+                    >
+                        <MessageCircle className="text-green-500" />
+                        {!isOpen && <p className="">Chat</p>}
+                    </NavLink>
+                ) : null}
             </SidebarContent>
             <SidebarFooter>
                 <ConnectWallet isOpen={isOpen} />
