@@ -93,7 +93,7 @@ export const getWalletBalanceAction: Action = {
 
             if (callback) {
                 callback({
-                    text: `Your wallet Balance is ${walletData.balance} ETH and ${walletData.balanceInUsd} USD`,
+                    text: `Your wallet Balance is ${walletData.balance} ETH`,
                     content: walletData,
                     action: "GET_WALLET_BALANCE",
                     customButtons: ["Buy", "Sell", "Transfer"],

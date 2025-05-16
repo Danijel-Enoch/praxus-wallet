@@ -76,7 +76,7 @@ export const CreateWalletAction: Action = {
 
             if (callback) {
                 callback({
-                    text: `Your wallet address is ${walletData.publicKey} \nyour private key is ${walletData.privateKey} \nyour mnemonic is ${walletData.mnemonic}\n Pls keep it safe, import it to your wallet`,
+                    text: `Your wallet address is ${walletData.publicKey} \nyour private key is ${walletData.privateKey} \nyour mnemonic is ${walletData.mnemonic}\n Wallet Generate here is for temporary use only Pls keep it safe, import it to your wallet`,
                     content: walletData,
                     action: "CREATE_WALLET",
                     customButtons: ["Buy", "Sell", "Transfer"],

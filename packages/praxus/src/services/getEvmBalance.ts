@@ -1,4 +1,4 @@
-import { Alchemy, Network } from "alchemy-sdk";
+import { formatEther, JsonRpcProvider } from "ethers";
 import { alchemyApiKey } from "../const";
 
 type BalanceResponse = {
@@ -8,10 +8,9 @@ type BalanceResponse = {
 };
 
 export const createWalletBalanceService = () => {
-    const alchemy = new Alchemy({
-        apiKey: alchemyApiKey,
-        network: Network.ETH_MAINNET,
-    });
+    const provider = new JsonRpcProvider(
+        "https://base-mainnet.g.alchemy.com/v2/XodKhBFQ9ZlyCjF4UEysO3Z_9qttO6qo"
+    );
 
     const getBalance = async (address: string): Promise<BalanceResponse> => {
         if (!address) {
@@ -20,23 +19,29 @@ export const createWalletBalanceService = () => {
 
         try {
             // Get the latest ETH balance
-            const balanceResult = await alchemy.core.getBalance(address);
-            const balanceInEth = Number(balanceResult) / 1e18; // Convert from Wei to ETH
+            const balanceResult = await provider.getBalance(address);
+
+            console.log("Balance Result:", balanceResult);
+            const balanceInEth = formatEther(balanceResult); // Convert from Wei to ETH
 
             // TODO: Add price fetching logic for USD conversion
             // For now using a placeholder conversion
-            const balanceInUsd = balanceInEth * 3000; // Placeholder price
+            const balanceInUsd = 1 * 3000; // Placeholder price
 
             const response: BalanceResponse = {
                 address,
-                balance: balanceInEth,
+                balance: parseFloat(balanceInEth.toString()),
                 balanceInUsd,
             };
-            
+
             return response;
-        } catch (error) {
-            console.error("Alchemy API Error:", error.message);
-            throw error;
+        } catch (error: unknown) {
+            const errorMessage =
+                error instanceof Error
+                    ? error.message
+                    : "Unknown error occurred";
+            console.error("Provider Error:", errorMessage);
+            throw new Error(`Failed to get balance: ${errorMessage}`);
         }
     };
 

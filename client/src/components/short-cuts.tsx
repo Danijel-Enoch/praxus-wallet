@@ -2,7 +2,7 @@ import { ArrowRightIcon } from "lucide-react";
 import { Button } from "./ui/button";
 
 const buttonData = [
-    { label: "Create Wallet", input: "Create a new wallet named ____" },
+    { label: "Create a burner Wallet", input: "Create a burner wallet" },
     { label: "Wallet", input: "Get my wallets and balances" },
     {
         label: "Quick PortFolio",
@@ -22,7 +22,7 @@ const buttonData = [
     },
     {
         label: "Get a base name",
-        input: "My name is __name__, get a base name for me",
+        input: "My name is __name__, buy/get a base domain name for me based on my name",
     },
 ];
 

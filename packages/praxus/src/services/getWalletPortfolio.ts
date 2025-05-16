@@ -5,18 +5,19 @@ import { alchemyApiKey } from "../const";
 // Configures the Alchemy SDK
 const config = {
     apiKey: alchemyApiKey, // Replace with your API key
-    network: Network.ETH_MAINNET, // Replace with your network
+    network: Network.BASE_MAINNET, // Replace with your network
 };
 
 const alchemy = new Alchemy(config);
 
 export const CreategetWalletPortfolioService = () => {
     const getPortfolio = async (
-        chain: string,
         address: string
     ): Promise<GetTokensForOwnerResponse> => {
-        if (!chain) {
-            throw new Error("Invalid create Wallet parameters");
+        console.log("getWalletPortfolioService", { address });
+
+        if (!address) {
+            throw new Error("Invalid address");
         }
 
         try {

@@ -48,6 +48,7 @@ export const getWalletPortfolioAction: Action = {
         callback: HandlerCallback
     ) => {
         // Initialize/update state
+
         if (!state) {
             state = (await runtime.composeState(message)) as State;
         }
@@ -75,9 +76,9 @@ export const getWalletPortfolioAction: Action = {
         if (!walletAddress) {
             throw new Error("No wallet address provided");
         }
-        if (!chain) {
-            throw new Error("No chain provided");
-        }
+        // if (!chain) {
+        //     throw new Error("No chain provided");
+        // }
 
         // Instantiate API service
         // const config = await validateOpenWeatherConfig(runtime);
@@ -86,14 +87,13 @@ export const getWalletPortfolioAction: Action = {
         // Fetch weather & respond
         try {
             const walletPorfolio = await walletService.getPortfolio(
-                String(content?.chain || ""),
-                String(content?.address || "")
+                walletAddress
             );
             elizaLogger.success(
                 `Successfully fetched Wallet Portfolio for ${content.chain}, ${content.address}`
             );
             let porfolioContent = `This is your wallet portfolio: \n`;
-            porfolioContent += `Wallet Address: ${content.address} \n`;
+            porfolioContent += `Wallet Address: ${walletAddress} \n`;
 
             if (!walletPorfolio.tokens || walletPorfolio.tokens.length === 0) {
                 porfolioContent += `No tokens found in the wallet.`;
