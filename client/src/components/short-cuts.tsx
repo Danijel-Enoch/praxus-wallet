@@ -12,10 +12,10 @@ const buttonData = [
         label: "Send Native/ETH",
         input: "Send __amount__ ETH to __address__",
     },
-    {
-        label: "Send Token",
-        input: "Send __amount__ of __token__ to __address__",
-    },
+    // {
+    //     label: "Send Token",
+    //     input: "Send __amount__ of __token__ to __address__",
+    // },
     {
         label: "Crypto Updates/News",
         input: "Get me latest crypto news and updates ",
