@@ -1,20 +1,20 @@
 import type { UUID, Character } from "@elizaos/core";
 
-let BASE_URL;
+let BASE_URL = "https://api-praxus.brewfury.top";
 
-if (import.meta.env.APP_PRODUCTION === "true") {
-    BASE_URL = import.meta.env.VITE_SERVER_URL;
-} else {
-    BASE_URL = `${import.meta.env.VITE_SERVER_URL}:${
-        import.meta.env.VITE_SERVER_PORT
-    }`;
-}
-console.log(
-    { BASE_URL },
-    import.meta.env.APP_PRODUCTION,
-    import.meta.env.VITE_SERVER_PORT,
-    import.meta.env.VITE_SERVER_URL
-);
+// if (import.meta.env.APP_PRODUCTION === "true") {
+//     BASE_URL = import.meta.env.VITE_SERVER_URL;
+// } else {
+//     BASE_URL = `${import.meta.env.VITE_SERVER_URL}:${
+//         import.meta.env.VITE_SERVER_PORT
+//     }`;
+// }
+// console.log(
+//     { BASE_URL },
+//     import.meta.env.APP_PRODUCTION,
+//     import.meta.env.VITE_SERVER_PORT,
+//     import.meta.env.VITE_SERVER_URL
+// );
 
 const fetcher = async ({
     url,
