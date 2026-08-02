@@ -98,3 +98,23 @@ ton_nft_metadata/*
 
 ton_nft_images/
 ton_nft_images/*
+# --- secrets excluded by backup script ---
+.env
+.env.*
+!.env.example
+!.env.sample
+*.key
+*.pem
+*.p12
+*.keystore
+keystore
+id_rsa
+id_ed25519
+wallet.json
+wallets.json
+secrets.json
+serviceAccount*.json
+*.mnemonic
+.secret
+.secrets
+packages/core/cache/fast-bge-small-en-v1.5/model_optimized.onnx
